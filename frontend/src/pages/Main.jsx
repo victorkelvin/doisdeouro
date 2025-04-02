@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 import TopBar from '../components/TopBar';
 import Sidebar from '../components/Sidebar';
@@ -12,35 +12,8 @@ import GraduacoesDashboard from '../components/GraduacoesDashboard';
 
 const Main = ({ onLogout }) => {
     const userId = useState(localStorage.getItem('userId'))[0];
-    const token = localStorage.getItem('token');
-    const apiUri = 'http://localhost:8000/api/';
-    const [selectedDashboard, setSelectedDashboard] = useState('alunos'); // Default dashboard
+    const [selectedDashboard, setSelectedDashboard] = useState(''); // Default dashboard
 
-    useEffect(() => {
-        if (window.location.pathname === '/main/') { 
-            const fetchData = async () => {
-                try {
-                    const response = await fetch(apiUri, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
-                        },
-                    });
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        if (errorData.code === 'token_not_valid') {
-                            window.alert('Sessão expirada!')
-                            onLogout(); 
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error fetching data:', error);
-                }
-            };
-
-            fetchData();
-        }
-    }, [ onLogout ,token]); // Add an empty dependency array
 
     const renderDashboard = () => {
         switch (selectedDashboard) {

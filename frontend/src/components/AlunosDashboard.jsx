@@ -2,7 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { formatDate } from '../utils/utils';
 import { sortAlunos, filterAlunos } from '../utils/sorting';
 import useAlunoForm from '../hooks/useAlunoForm';
-import { fetchAlunos, fetchGraduacoes, fetchTurmas, createAluno, updateAluno } from '../services/alunosApi';
+import { fetchAlunos, fetchGraduacoes, createAluno, updateAluno } from '../services/alunosApi';
+import { fetchTurmas } from '../services/turmasApi';
 
 
 const AlunosDashboard = () => {
@@ -41,15 +42,16 @@ const AlunosDashboard = () => {
         setEditingId,
     } = useAlunoForm();
 
+    const loadData = async () => {
+        const alunosData = await fetchAlunos();
+        setAlunos(alunosData.results);
+        const graduacoesData = await fetchGraduacoes();
+        setGraduacoes(graduacoesData.results);
+        const turmasData = await fetchTurmas();
+        setTurmas(turmasData.results);
+    };
+
     useEffect(() => {
-        const loadData = async () => {
-            const alunosData = await fetchAlunos();
-            setAlunos(alunosData.results);
-            const graduacoesData = await fetchGraduacoes();
-            setGraduacoes(graduacoesData.results);
-            const turmasData = await fetchTurmas();
-            setTurmas(turmasData.results);
-        };
         loadData();
     }, []);
 

@@ -57,7 +57,7 @@ class Turma(models.Model):
     ]
 
     nome = models.CharField(max_length=100, verbose_name='Turma')
-    dias_da_semana = models.ManyToManyField(DiaSemana)
+    dias_da_semana = models.ManyToManyField(DiaSemana, blank=True)
     horario = models.TimeField(verbose_name='Horário')
 
     def __str__(self):

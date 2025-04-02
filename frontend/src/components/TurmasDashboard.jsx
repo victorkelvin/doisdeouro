@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { fetchTurmas, createTurma, updateTurma } from '../services/turmasApi';
 
-const apiUri = 'http://localhost:8000/api/turmas/';
 const TurmasDashboard = () => {
     const [turmas, setTurmas] = useState([]);
     const [nome, setNome] = useState('');
@@ -8,53 +8,49 @@ const TurmasDashboard = () => {
     const [horario, setHorario] = useState('');
     const [editingId, setEditingId] = useState(null);
 
+
     useEffect(() => {
-        fetchTurmas();
+        fetchTurmasData();
     }, []);
 
-    const fetchTurmas = async () => {
-        const token = localStorage.getItem('token'); // Assuming you store the token in local storage
-        const response = await fetch(apiUri, {
-            headers: {
-                'Authorization': `Bearer ${token}`, // Include the token in the Authorization header
-            },
-        });
-        
-        if (!response.ok) {
-            const errorData = await response.json(); // Get the error response
-            console.error('Failed to fetch turmas:', response.statusText, errorData); // Log the error details
-            return;
-        }
-        
-        const data = await response.json();
-        setTurmas(data.results);
+    const fetchTurmasData = async () => {
+        const response = await fetchTurmas();
+        setTurmas(response.results);
     };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const method = editingId ? 'PUT' : 'POST';
-        const url = editingId ? `${apiUri}${editingId}/` : apiUri;
-        
-        //CRUD de turmas finalizado. Seguir para CRUD de Alunos.
-        
-        await fetch(url, {
-            method,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('token')}`, // Include the token here as well
-            },
-            body: JSON.stringify({ nome, dias_da_semana: diasDaSemana, horario }),
-        });
-        
+
+        try {
+            const formData = new FormData();
+            formData.append('nome', nome);
+            formData.append('dias_da_semana', diasDaSemana);
+            formData.append('horario', horario);
+
+            const body = JSON.stringify({ nome, dias_da_semana: diasDaSemana, horario })
+
+            if (editingId) {
+                await updateTurma(editingId, body);
+            } else {
+                await createTurma(body);
+            }
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            throw new Error('Failed to submit form');
+        }
+
         resetForm();
-        fetchTurmas();
+        fetchTurmasData();
     };
 
     const handleEdit = (turma) => {
         setNome(turma.nome);
-        setDiasDaSemana(turma.dias_da_semana); // Assuming dias_da_semana is a comma-separated string
+        setDiasDaSemana(turma.dias_da_semana);
         setHorario(turma.horario);
         setEditingId(turma.id);
+        console.log('Editing turma:', diasDaSemana);
+
     };
 
     const resetForm = () => {
@@ -65,7 +61,7 @@ const TurmasDashboard = () => {
     };
 
     const handleCheckboxChange = (day) => {
-        setDiasDaSemana((prev) => 
+        setDiasDaSemana((prev) =>
             prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day]
         );
     };
@@ -84,7 +80,7 @@ const TurmasDashboard = () => {
                 />
                 <div className="mb-2">
                     <span className="block mb-1">Dias:</span>
-                    {['1', '2', '3', '4', '5', '6', '7'].map((day) => (
+                    {[1, 2, 3, 4, 5, 6, 7].map((day) => (
                         <label key={day} className="inline-flex items-center mr-4">
                             <input
                                 type="checkbox"
@@ -93,7 +89,7 @@ const TurmasDashboard = () => {
                                 onChange={() => handleCheckboxChange(day)}
                                 className="form-checkbox"
                             />
-                            <span className="ml-2">{day === '1' ? 'Segunda-feira' : day === '2' ? 'Terça-feira' : day === '3' ? 'Quarta-feira' : day === '4' ? 'Quinta-feira' : day === '5' ? 'Sexta-feira' : day === '6' ? 'Sábado' : 'Domingo'}</span>
+                            <span className="ml-2">{day === 1 ? 'Segunda-feira' : day === 2 ? 'Terça-feira' : day === 3 ? 'Quarta-feira' : day === 4 ? 'Quinta-feira' : day === 5 ? 'Sexta-feira' : day === 6 ? 'Sábado' : 'Domingo'}</span>
                         </label>
                     ))}
                 </div>

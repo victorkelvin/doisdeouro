@@ -14,7 +14,7 @@ const handleResponse = async (response) => {
             window.location.href = '/login'; // Redirect to login page
 
         }
-        throw new Error(`Error: ${response.statusText}, Details: ${JSON.stringify(errorData)}`);
+        console.error('Error:', errorData);
     }
     return response.json();
 };
@@ -38,7 +38,7 @@ const apiFormDataRequest = async (endpoint, method, formData) => {
         method,
         headers: {
             'Authorization': `Bearer ${getToken()}`,
-            // Don't set Content-Type for FormData
+            'Content-Type': 'application/json',
         },
         body: formData,
     };

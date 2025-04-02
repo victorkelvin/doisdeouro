@@ -1,0 +1,475 @@
+import React, { useEffect, useState, useRef } from 'react';
+import { formatDate } from '../utils/utils';
+import { sortAlunos, filterAlunos } from '../utils/sorting';
+import useAlunoForm from '../hooks/useAlunoForm';
+import { fetchAlunos, fetchGraduacoes, fetchTurmas, createAluno, updateAluno } from '../services/alunosApi';
+
+
+const AlunosDashboard = () => {
+    const [alunos, setAlunos] = useState([]);
+    const [graduacoes, setGraduacoes] = useState([]);
+    const [turmas, setTurmas] = useState([]);
+    const [selectedAluno, setSelectedAluno] = useState(null);
+    const [isFormVisible, setIsFormVisible] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [sortOption, setSortOption] = useState('nome');
+    const [sortDirection, setSortDirection] = useState('asc');
+    const [cardPosition, setCardPosition] = useState({ x: 0, y: 0 });
+    const cardRef = useRef(null);
+
+    const {
+        nome,
+        data_nascimento,
+        contato,
+        email,
+        graduacao,
+        turma,
+        ativo,
+        foto,
+        fotoPreview,
+        editingId,
+        setNome,
+        setDataNascimento,
+        setContato,
+        setEmail,
+        setGraduacao,
+        setTurma,
+        setAtivo,
+        setFotoPreview,
+        resetForm,
+        handleFileChange,
+        setEditingId,
+    } = useAlunoForm();
+
+    useEffect(() => {
+        const loadData = async () => {
+            const alunosData = await fetchAlunos();
+            setAlunos(alunosData.results);
+            const graduacoesData = await fetchGraduacoes();
+            setGraduacoes(graduacoesData.results);
+            const turmasData = await fetchTurmas();
+            setTurmas(turmasData.results);
+        };
+        loadData();
+    }, []);
+
+
+
+    const handleMouseEnter = (aluno, e) => {
+        setSelectedAluno(aluno);
+
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        let x = e.clientX + 10; // Offset from cursor
+        let y = e.clientY + 10;
+
+        setTimeout(() => {
+            if (cardRef.current) {
+                const cardWidth = cardRef.current.offsetWidth;
+                const cardHeight = cardRef.current.offsetHeight;
+
+                // Adjust horizontal position if needed
+                if (x + cardWidth > viewportWidth) {
+                    x = e.clientX - cardWidth - 10;
+                }
+
+                // Adjust vertical position if needed
+                if (y + cardHeight > viewportHeight) {
+                    y = e.clientY - cardHeight - 10;
+                }
+
+                setCardPosition({ x, y });
+            }
+        }, 0);
+
+        setCardPosition({ x, y });
+    };
+
+    const handleMouseLeave = () => {
+        setSelectedAluno(null);
+    };
+
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            const formData = new FormData();
+            formData.append('nome', nome);
+            formData.append('data_nascimento', data_nascimento);
+            formData.append('contato', contato);
+            formData.append('email', email);
+            formData.append('graduacao', graduacao);
+            formData.append('turma', turma);
+            formData.append('ativo', ativo);
+            if (foto) {
+                formData.append('foto', foto);
+            }
+
+            if (editingId) {
+                await updateAluno(editingId, formData);
+            } else {
+                await createAluno(formData);
+            }
+
+            resetForm();
+            fetchAlunos();
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            // Handle error appropriately (show message to user, etc.)
+        }
+    };
+
+    const handleEdit = (aluno) => {
+        setNome(aluno.nome);
+        setAtivo(aluno.ativo === true || aluno.ativo === "true"); // Convert to boolean
+        setDataNascimento(aluno.data_nascimento);
+        setContato(aluno.contato);
+        setEmail(aluno.email);
+        setGraduacao(aluno.graduacao);
+        setTurma(aluno.turma);
+        setEditingId(aluno.id);
+        setFotoPreview(aluno.foto);
+    };
+
+    // Function to toggle active status directly from the table
+    const toggleAtivoStatus = async (aluno) => {
+        const newStatus = !(aluno.ativo === true || aluno.ativo === "true");
+        const formData = new FormData();
+        formData.append('nome', aluno.nome);
+        formData.append('data_nascimento', aluno.data_nascimento || '');
+        formData.append('contato', aluno.contato || '');
+        formData.append('email', aluno.email || '');
+        formData.append('graduacao', aluno.graduacao || '');
+        formData.append('turma', aluno.turma || '');
+        formData.append('ativo', newStatus);
+
+        await updateAluno(aluno.id, formData);
+        const alunosData = await fetchAlunos();
+        setAlunos(alunosData.results);
+    };
+
+    const filteredAlunos = filterAlunos(alunos, searchTerm);
+
+
+    // Handle sorting
+    const handleSort = (option) => {
+        if (sortOption === option) {
+            // If clicking the same column, toggle direction
+            setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+        } else {
+            // New column, default to ascending
+            setSortOption(option);
+            setSortDirection('asc');
+        }
+    };
+
+    const sortedAlunos = sortAlunos(filteredAlunos, sortOption, sortDirection);
+
+    // Render sort indicator based on current sort state
+    const renderSortIndicator = (columnName) => {
+        if (sortOption !== columnName) {
+            return (
+                <svg className="w-4 h-4 inline-block ml-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                </svg>
+            );
+        }
+
+        if (sortDirection === 'asc') {
+            return (
+                <svg className="w-4 h-4 inline-block ml-1 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                </svg>
+            );
+        } else {
+            return (
+                <svg className="w-4 h-4 inline-block ml-1 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+            );
+        }
+    };
+
+    return (
+        <div className="p-4 relative">
+            <h1 className="text-2xl font-bold mb-4">Alunos</h1>
+            <button
+                onClick={() => setIsFormVisible(!isFormVisible)}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white rounded px-4 py-2 mb-4 flex items-center transition-all duration-200 shadow-md"
+            >
+                {isFormVisible ? (
+                    <>
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                        <span>Ocultar Formulário</span>
+                    </>
+                ) : (
+                    <>
+                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                        </svg>
+                        <span>Mostrar Formulário</span>
+                    </>
+                )}
+            </button>
+
+            {isFormVisible && (
+                <div className="bg-white p-6 rounded-lg shadow-md mb-6 border border-gray-200 transition-all duration-300">
+                    <h2 className="text-lg font-semibold mb-4 text-gray-800">{editingId ? 'Editar Aluno' : 'Adicionar Novo Aluno'}</h2>
+                    <form onSubmit={handleSubmit}>
+                        <input
+                            type="text"
+                            placeholder="Nome"
+                            value={nome}
+                            onChange={(e) => setNome(e.target.value)}
+                            required
+                            className="border rounded p-2 mb-3 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent"
+                        />
+                        <input
+                            type="date"
+                            value={data_nascimento}
+                            onChange={(e) => setDataNascimento(e.target.value)}
+                            className="border rounded p-2 mb-3 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent"
+                        />
+                        <input
+                            type="text"
+                            placeholder="Contato"
+                            value={contato}
+                            onChange={(e) => setContato(e.target.value)}
+                            className="border rounded p-2 mb-3 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent"
+                        />
+                        <input
+                            type="email"
+                            placeholder="Email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="border rounded p-2 mb-3 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent"
+                        />
+
+
+
+                        <div className="mb-3">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">Foto</label>
+                            <input
+                                type="file"
+                                accept="image/jpeg, image/png"
+                                onChange={handleFileChange}
+                                className="border rounded p-2 w-full bg-white"
+                            />
+                            {fotoPreview && (
+                                <div className="mt-2">
+                                    <img src={fotoPreview} alt="Preview" className="w-32 h-32 object-cover rounded border border-gray-300" />
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="mb-3">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">Graduação</label>
+                            <select
+                                value={graduacao}
+                                onChange={(e) => setGraduacao(e.target.value)}
+                                className="border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent"
+                            >
+                                <option value="">Selecione a Graduação</option>
+                                {graduacoes.map((grad) => (
+                                    <option key={grad.id} value={grad.id}>
+                                        {grad.faixa}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="mb-4">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">Turma</label>
+                            <select
+                                value={turma}
+                                onChange={(e) => setTurma(e.target.value)}
+                                className="border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent"
+                            >
+                                <option value="">Selecione a Turma</option>
+                                {turmas.map((turma) => (
+                                    <option key={turma.id} value={turma.id}>
+                                        {turma.nome}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Add the checkbox for "Ativo" status */}
+                        <div className="flex items-center mb-3">
+                            <input
+                                id="ativo-checkbox"
+                                type="checkbox"
+                                checked={ativo}
+                                onChange={(e) => setAtivo(e.target.checked)}
+                                className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                            />
+                            <label htmlFor="ativo-checkbox" className="ml-2 block text-sm text-gray-700 font-bold">
+                                Aluno Ativo
+                            </label>
+                        </div>
+
+                        <div className="flex space-x-2">
+                            <button
+                                type="submit"
+                                className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded shadow-md transition-all duration-200"
+                            >
+                                {editingId ? 'Atualizar' : 'Adicionar'}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={resetForm}
+                                className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded shadow-md transition-all duration-200"
+                            >
+                                Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            )}
+
+            {/* Search Bar */}
+            <div className="mb-4 relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                    </svg>
+                </div>
+                <input
+                    type="text"
+                    placeholder="Buscar Aluno"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent"
+                />
+            </div>
+
+            <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+                <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                        <tr>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <div className="flex items-center space-x-1">
+                                    <span>Status</span>
+                                </div>
+                            </th>
+
+                            <th
+                                className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer ${sortOption === 'nome' ? 'text-indigo-600' : 'text-gray-500'} hover:bg-gray-100`}
+                                onClick={() => handleSort('nome')}
+                            >
+                                <div className="flex items-center space-x-1">
+                                    <span>Nome</span>
+                                    {renderSortIndicator('nome')}
+                                </div>
+                            </th>
+                            <th
+                                className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer ${sortOption === 'graduação' ? 'text-indigo-600' : 'text-gray-500'} hover:bg-gray-100`}
+                            >
+                                <div className="flex items-center space-x-1">
+                                    <span>Graduação</span>
+                                </div>
+                            </th>
+                            <th
+                                className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer ${sortOption === 'turma' ? 'text-indigo-600' : 'text-gray-500'} hover:bg-gray-100`}
+                            >
+                                <div className="flex items-center space-x-1">
+                                    <span>Turma</span>
+                                </div>
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Ações
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                        {sortedAlunos.map((aluno) => {
+                            // Find the corresponding graduation object
+                            const graduacaoObj = graduacoes.find(grad => grad.id === aluno.graduacao);
+                            const turmaObj = turmas.find(turma => turma.id === aluno.turma);
+                            // Convert ativo to boolean for display
+                            const isAtivo = aluno.ativo === true || aluno.ativo === "true";
+
+                            return (
+                                <tr
+                                    key={aluno.id}
+                                    onMouseEnter={(e) => handleMouseEnter(aluno, e)}
+                                    onMouseLeave={handleMouseLeave}
+                                    className={`hover:bg-gray-50 ${!isAtivo ? 'bg-gray-50' : ''}`}
+                                >
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="flex items-center">
+                                            <input
+                                                type="checkbox"
+                                                checked={isAtivo}
+                                                onChange={() => toggleAtivoStatus(aluno)}
+                                                className="form-checkbox h-5 w-5 text-indigo-600 transition duration-150 ease-in-out cursor-pointer"
+                                            />
+                                            <span className={`ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${isAtivo
+                                                ? 'bg-green-100 text-green-800'
+                                                : 'bg-red-100 text-red-800'
+                                                }`}>
+                                                {isAtivo ? 'Ativo' : 'Inativo'}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{aluno.nome}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{graduacaoObj ? graduacaoObj.faixa : 'N/A'}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{turmaObj ? turmaObj.nome : 'N/A'}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button
+                                            onClick={() => handleEdit(aluno)}
+                                            className="bg-amber-500 hover:bg-amber-600 text-white rounded px-3 py-1 transition-colors duration-200"
+                                        >
+                                            Editar
+                                        </button>
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            </div>
+
+            {
+                selectedAluno && (
+                    <div
+                        ref={cardRef}
+                        className="fixed bg-white rounded-lg border p-4 shadow-lg max-w-xs z-50"
+                        style={{
+                            left: `${cardPosition.x}px`,
+                            top: `${cardPosition.y}px`
+                        }}
+                    >
+                        <div className="flex flex-col items-center">
+                            <img
+                                src={selectedAluno.foto}
+                                alt={selectedAluno.nome}
+                                className="w-32 h-32 object-cover rounded-lg mb-2 border border-gray-200"
+                            />
+                            <h2 className='font-bold text-lg text-gray-900'>{selectedAluno.nome}</h2>
+                            <div className="w-full mt-2">
+                                <p className="text-sm"><span className="font-semibold">Graduação:</span> {graduacoes.find(grad => grad.id === selectedAluno.graduacao)?.faixa || 'N/A'}</p>
+                                <p className="text-sm"><span className="font-semibold">Status:</span>
+                                    <span className={`ml-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${selectedAluno.ativo === true || selectedAluno.ativo === "true"
+                                        ? 'bg-green-100 text-green-800'
+                                        : 'bg-red-100 text-red-800'
+                                        }`}>
+                                        {selectedAluno.ativo === true || selectedAluno.ativo === "true" ? 'Ativo' : 'Inativo'}
+                                    </span>
+                                </p>
+                                <p className="text-sm"><span className="font-semibold">Data de Nascimento:</span> {selectedAluno.data_nascimento ? formatDate(selectedAluno.data_nascimento) : 'N/A'}</p>
+                                <p className="text-sm"><span className="font-semibold">Contato:</span> {selectedAluno.contato || 'N/A'}</p>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+        </div >
+    );
+};
+
+export default AlunosDashboard;

@@ -1,0 +1,65 @@
+Listagem de caminhos de pasta
+O n£mero de s‚rie do volume ‚ E48D-6F22
+C:.
+³   manage.py
+³   requiriments.txt
+³   tree.txt
+³   
+ÃÄÄÄapps
+³   ³   __init__.py
+³   ³   
+³   ÃÄÄÄacademia
+³   ³   ³   admin.py
+³   ³   ³   apps.py
+³   ³   ³   models.py
+³   ³   ³   tests.py
+³   ³   ³   views.py
+³   ³   ³   __init__.py
+³   ³   ³   
+³   ³   ÃÄÄÄmigrations
+³   ³   ³       __init__.py
+³   ³   ³       
+³   ³   ÀÄÄÄ__pycache__
+³   ³           apps.cpython-312.pyc
+³   ³           __init__.cpython-312.pyc
+³   ³           
+³   ÃÄÄÄatendimento
+³   ³   ³   admin.py
+³   ³   ³   apps.py
+³   ³   ³   models.py
+³   ³   ³   tests.py
+³   ³   ³   views.py
+³   ³   ³   __init__.py
+³   ³   ³   
+³   ³   ÀÄÄÄmigrations
+³   ³           __init__.py
+³   ³           
+³   ÃÄÄÄcontas
+³   ³   ³   admin.py
+³   ³   ³   apps.py
+³   ³   ³   models.py
+³   ³   ³   tests.py
+³   ³   ³   views.py
+³   ³   ³   __init__.py
+³   ³   ³   
+³   ³   ÃÄÄÄmigrations
+³   ³   ³       __init__.py
+³   ³   ³       
+³   ³   ÀÄÄÄ__pycache__
+³   ³           apps.cpython-312.pyc
+³   ³           __init__.cpython-312.pyc
+³   ³           
+³   ÀÄÄÄ__pycache__
+³           __init__.cpython-312.pyc
+³           
+ÀÄÄÄcore
+    ³   asgi.py
+    ³   settings.py
+    ³   urls.py
+    ³   wsgi.py
+    ³   __init__.py
+    ³   
+    ÀÄÄÄ__pycache__
+            settings.cpython-312.pyc
+            __init__.cpython-312.pyc
+            

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { sortData, filterData, renderSortIndicator } from '../utils/sorting';
+import { sortData, renderSortIndicator, filterAlunos } from '../utils/sorting';
 import useAlunoForm from '../hooks/useAlunoForm';
 import { fetchAlunos, fetchGraduacoes, createAluno, updateAluno } from '../services/alunosApi';
 import { fetchTurmas } from '../services/turmasApi';
@@ -152,7 +152,7 @@ const AlunosDashboard = () => {
         setAlunos(alunosData.results);
     };
 
-    const filteredAlunos = filterData(alunos, searchTerm);
+    const filteredAlunos = filterAlunos(alunos, searchTerm);
 
 
     // Handle sorting

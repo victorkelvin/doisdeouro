@@ -8,9 +8,15 @@ export const sortData = (data, sortDirection) => {
     });
 };
 
-export const filterData = (data, searchTerm) => {
+export const filterAlunos = (data, searchTerm) => {
     return data.filter(d =>
         d.nome.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+};
+
+export const filterInstrutores = (data, searchTerm) => {
+    return data.filter(d =>
+        d.first_name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 };
 

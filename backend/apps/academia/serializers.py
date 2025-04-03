@@ -7,14 +7,14 @@ class AlunoSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class TurmaSerializer(serializers.ModelSerializer):
-    dias = serializers.SerializerMethodField()  # Custom field to get 'dia' values
+    dias = serializers.SerializerMethodField()  
 
     class Meta:
         model = Turma
         fields = ['id', 'nome', 'horario', 'dias', 'dias_da_semana']
 
     def get_dias(self, obj):
-        return [dia.dia for dia in obj.dias_da_semana.all()]  # Retrieve 'dia' values from related DiaSemana
+        return [dia.dia for dia in obj.dias_da_semana.all()]  
 
 class GraduacaoSerializer(serializers.ModelSerializer):
     class Meta:

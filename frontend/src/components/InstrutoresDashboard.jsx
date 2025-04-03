@@ -2,14 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { fetchInstrutores, createInstrutor, updateInstrutor } from '../services/instrutoresApi';
 import { fetchGraduacoes } from '../services/alunosApi';
 import useInstrutorForm from '../hooks/useInstrutorForm';
-import { filterData, sortData } from '../utils/sorting';
-// import SearchBar from './SearchBar';
+import { filterInstrutores, sortData, renderSortIndicator } from '../utils/sorting';
+import SearchBar from './SearchBar';
 // import InstrutorCard from './InstrutorCard'; // Create this component for displaying individual instrutor details
 
 const InstrutoresDashboard = () => {
     const [instrutores, setInstrutores] = useState([]);
     const [graduacoes, setGraduacoes] = useState([]);
     // const [selectedInstrutor, setSelectedInstrutor] = useState(null);
+    const [sortDirection, setSortDirection] = useState('asc');
     const [isFormVisible, setIsFormVisible] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -140,26 +141,15 @@ const InstrutoresDashboard = () => {
         formData.append('graduacao', instrutor.graduacao || '');
         formData.append('is_active', newStatus);
 
-        await updateInstrutor(aluno.id, formData);
+        await updateInstrutor(instrutor.id, formData);
         const instrutoresData = await fetchInstrutores();
         setInstrutores(instrutoresData.results);
     };
 
-    const filteredInstrutores = filterData(instrutores, searchTerm);
+    const filteredInstrutores = filterInstrutores(instrutores, searchTerm);
 
-    // Handle sorting
-    const handleSort = (option) => {
-        if (sortOption === option) {
-            // If clicking the same column, toggle direction
-            setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-        } else {
-            // New column, default to ascending
-            setSortOption(option);
-            setSortDirection('asc');
-        }
-    };
 
-    const sortedInstrutores = sortData(filteredInstrutores, sortOption, sortDirection);
+    const sortedInstrutores = sortData(filteredInstrutores, sortDirection);
 
 
 
@@ -199,11 +189,11 @@ const InstrutoresDashboard = () => {
                             className="border rounded p-2 mb-3 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent" />
                         <input type="text" name="first_name" placeholder="Nome" value={first_name} onChange={(e) => setFirstName(e.target.value)} required
                             className="border rounded p-2 mb-3 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent" />
-                        <input type="text" name="last_name" placeholder="Sobrenome" value={last_name} onChange={(e) => setLastName(e.target.value)} required
+                        <input type="text" name="last_name" placeholder="Sobrenome" value={last_name} onChange={(e) => setLastName(e.target.value)} 
                             className="border rounded p-2 mb-3 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent" />
-                        <input type="email" name="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required
+                        <input type="email" name="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} 
                             className="border rounded p-2 mb-3 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent" />
-                        <input type="text" name="contato" placeholder="Contato" value={contato} onChange={(e) => setContato(e.target.value)} required
+                        <input type="text" name="contato" placeholder="Contato" value={contato} onChange={(e) => setContato(e.target.value)} 
                             className="border rounded p-2 mb-3 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent" />
 
                         <div className="mb-3">
@@ -268,15 +258,76 @@ const InstrutoresDashboard = () => {
                 </div>
             )}
 
-            {/* <SearchBar value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} /> */}
+            <SearchBar value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
 
             {/* tabela de instrutores */}
-            <div>
-                {instrutores.filter(instrutor => instrutor.username.includes(searchTerm)).map(instrutor => (
-                    <div key={instrutor.id}>
-                        {/* <InstrutorCard instrutor={instrutor} onEdit={handleEdit} /> */}
-                    </div>
-                ))}
+            <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+                <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                        <tr>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <div className="flex items-center space-x-1">
+                                    <span>Status</span>
+                                </div>
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
+
+
+
+                            <th
+                                scope="col"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                                onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
+                            >
+                                Nome
+                                {renderSortIndicator(sortDirection)}
+                            </th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sobrenome</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Graduação</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contato</th>
+                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Ações
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody className="bg-white divide-y divide-gray-200">
+                        {sortedInstrutores.map((instrutor) => (
+                            <tr key={instrutor.id} className="hover:bg-gray-50 transition-all duration-200 cursor-pointer">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <input
+                                        type="checkbox"
+                                        checked={instrutor.is_active === true || instrutor.is_active === "true"}
+                                        onChange={() => toggleAtivoStatus(instrutor)}
+                                        className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                                    />
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{instrutor.username}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{instrutor.first_name}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{instrutor.last_name}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{instrutor.graduacao}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{instrutor.contato}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{instrutor.email}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                    <button
+                                        onClick={() => handleEdit(instrutor)}
+                                        className="bg-amber-500 hover:bg-amber-600 text-white rounded px-3 py-1 transition-colors duration-200"
+                                    >
+                                        Editar
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+
+
+
+
+
+
+                    </tbody>
+                </table>
+
             </div>
         </div>
     );

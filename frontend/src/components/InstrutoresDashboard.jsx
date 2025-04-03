@@ -1,18 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { fetchInstrutores, createInstrutor, updateInstrutor } from '../services/instrutoresApi';
 import { fetchGraduacoes } from '../services/alunosApi';
 import useInstrutorForm from '../hooks/useInstrutorForm';
 import { filterData, sortData, renderSortIndicator } from '../utils/sorting';
 import SearchBar from './SearchBar';
-// import InstrutorCard from './InstrutorCard'; // Create this component for displaying individual instrutor details
+import SpanCard from './SpanCard';
 
 const InstrutoresDashboard = () => {
     const [instrutores, setInstrutores] = useState([]);
     const [graduacoes, setGraduacoes] = useState([]);
-    // const [selectedInstrutor, setSelectedInstrutor] = useState(null);
+    const [selectedInstrutor, setSelectedInstrutor] = useState(null);
     const [sortDirection, setSortDirection] = useState('asc');
     const [isFormVisible, setIsFormVisible] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [cardPosition, setCardPosition] = useState({ x: 0, y: 0 });
+    const cardRef = useRef(null);
 
 
     const {
@@ -55,40 +57,40 @@ const InstrutoresDashboard = () => {
 
 
     {/* handle selected instrutor  */ }
-    /*     const handleMouseEnter = (instrutor, e) => {
-            setSelectedInstrutor(instrutor);
-    
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
-    
-            let x = e.clientX + 10; // Offset from cursor
-            let y = e.clientY + 10;
-    
-            setTimeout(() => {
-                if (cardRef.current) {
-                    const cardWidth = cardRef.current.offsetWidth;
-                    const cardHeight = cardRef.current.offsetHeight;
-    
-                    // Adjust horizontal position if needed
-                    if (x + cardWidth > viewportWidth) {
-                        x = e.clientX - cardWidth - 10;
-                    }
-    
-                    // Adjust vertical position if needed
-                    if (y + cardHeight > viewportHeight) {
-                        y = e.clientY - cardHeight - 10;
-                    }
-    
-                    setCardPosition({ x, y });
-                }
-            }, 0);
-    
-            setCardPosition({ x, y });
-        }; */
+    const handleMouseEnter = (instrutor, e) => {
+        setSelectedInstrutor(instrutor);
 
-    // const handleMouseLeave = () => {
-    //     setSelectedInstrutor(null);
-    // };
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        let x = e.clientX + 10; // Offset from cursor
+        let y = e.clientY + 10;
+
+        setTimeout(() => {
+            if (cardRef.current) {
+                const cardWidth = cardRef.current.offsetWidth;
+                const cardHeight = cardRef.current.offsetHeight;
+
+                // Adjust horizontal position if needed
+                if (x + cardWidth > viewportWidth) {
+                    x = e.clientX - cardWidth - 10;
+                }
+
+                // Adjust vertical position if needed
+                if (y + cardHeight > viewportHeight) {
+                    y = e.clientY - cardHeight - 10;
+                }
+
+                setCardPosition({ x, y });
+            }
+        }, 0);
+
+        setCardPosition({ x, y });
+    };
+
+    const handleMouseLeave = () => {
+        setSelectedInstrutor(null);
+    };
 
 
     const handleSubmit = async (e) => {
@@ -124,7 +126,7 @@ const InstrutoresDashboard = () => {
 
     const handleEdit = (instrutor) => {
         setUsername(instrutor.username);
-        setIsActive(instrutor.is_active === true || instrutor.is_active === "true"); 
+        setIsActive(instrutor.is_active === true || instrutor.is_active === "true");
         setNome(instrutor.nome);
         setContato(instrutor.contato || '');
         setEmail(instrutor.email || '');
@@ -195,7 +197,7 @@ const InstrutoresDashboard = () => {
 
                         <input type="text" name="username" placeholder="Nome de Usuário" value={username} onChange={(e) => setUsername(e.target.value)} required
                             className="border rounded p-2 mb-3 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent" />
-                        <input type="password" name="password" placeholder="Senha" value={password} onChange={(e) => setPassword(e.target.value)} 
+                        <input type="password" name="password" placeholder="Senha" value={password} onChange={(e) => setPassword(e.target.value)}
                             className="border rounded p-2 mb-3 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent" />
                         <input type="password" name="passwordConfirm" placeholder="Confirmação de Senha" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} required={!!password}
                             className="border rounded p-2 mb-3 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent" />
@@ -308,7 +310,10 @@ const InstrutoresDashboard = () => {
 
                             return (
 
-                                <tr key={instrutor.id} className="hover:bg-gray-50 transition-all duration-200 cursor-pointer">
+                                <tr key={instrutor.id} className="hover:bg-gray-50 transition-all duration-200 cursor-pointer"
+                                    onMouseEnter={(e) => handleMouseEnter(instrutor, e)}
+                                    onMouseLeave={handleMouseLeave}
+                                >
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         <input
                                             type="checkbox"
@@ -335,15 +340,13 @@ const InstrutoresDashboard = () => {
                         })
                         }
 
-
-
-
-
-
                     </tbody>
                 </table>
-
             </div>
+
+            {selectedInstrutor && (
+                <SpanCard data={selectedInstrutor} position={cardPosition} setCardPosition={setCardPosition} />
+            )}
         </div>
     );
 };

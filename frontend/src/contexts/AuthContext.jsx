@@ -29,6 +29,7 @@ export const AuthProvider = ({ children }) => {
                 setUserId(null);
             }
             
+            navigate('/main', { state: { userId: storedUserId } });
             setIsLoading(false);
         };
         

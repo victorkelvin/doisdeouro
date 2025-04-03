@@ -43,7 +43,6 @@ const useInstrutorForm = () => {
         setUsername,
         setFirstName,
         setLastName,
-        setIsActive,
         setGraduacao,
         setEmail,
         setContato,

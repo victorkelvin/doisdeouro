@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { fetchInstrutores, createInstrutor, updateInstrutor } from '../services/instrutoresApi';
 import { fetchGraduacoes } from '../services/alunosApi';
 import useInstrutorForm from '../hooks/useInstrutorForm';
+import { filterData, sortData } from '../utils/sorting';
 // import SearchBar from './SearchBar';
 // import InstrutorCard from './InstrutorCard'; // Create this component for displaying individual instrutor details
 
@@ -11,15 +12,7 @@ const InstrutoresDashboard = () => {
     // const [selectedInstrutor, setSelectedInstrutor] = useState(null);
     const [isFormVisible, setIsFormVisible] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
-    const [formData, setFormData] = useState({
-        username: '',
-        first_name: '',
-        last_name: '',
-        is_active: false,
-        graduacao: '',
-        email: '',
-        contato: ''
-    });
+
 
     const {
         username,
@@ -106,9 +99,9 @@ const InstrutoresDashboard = () => {
             formData.append('graduacao', graduacao);
             formData.append('contato', contato);
             formData.append('is_active,', is_active,);
-            // if (foto) {
-            //     formData.append('foto', foto);
-            // }
+            if (foto) {
+                formData.append('foto', foto);
+            }
 
             if (editingId) {
                 await updateInstrutor(editingId, formData);
@@ -124,17 +117,52 @@ const InstrutoresDashboard = () => {
         }
     };
 
-    // const handleEdit = (aluno) => {
-    //     setNome(aluno.nome);
-    //     setIsActive(aluno.is_active, === true || aluno.is_active, === "true"); // Convert to boolean
-    //     setDataNascimento(aluno.data_nascimento);
-    //     setContato(aluno.contato || '');
-    //     setEmail(aluno.email || '');
-    //     setGraduacao(aluno.graduacao || '');
-    //     setTurma(aluno.turma || '');
-    //     setEditingId(aluno.id);
-    //     setFotoPreview(aluno.foto);
-    // };
+    const handleEdit = (instrutor) => {
+        setUsername(instrutor.username);
+        setIsActive(instrutor.is_active === true || instrutor.is_active === "true"); // Convert to boolean
+        setFirstName(instrutor.first_name);
+        setLastName(instrutor.last_name || '');
+        setContato(instrutor.contato || '');
+        setEmail(instrutor.email || '');
+        setGraduacao(instrutor.graduacao || '');
+        setFotoPreview(instrutor.foto);
+        setEditingId(instrutor.id);
+    };
+
+    const toggleAtivoStatus = async (instrutor) => {
+        const newStatus = !(instrutor.is_active === true || instrutor.is_active === "true");
+        const formData = new FormData();
+        formData.append('username', instrutor.username);
+        formData.append('first_name', instrutor.first_name || '');
+        formData.append('last_name', instrutor.last_name || '');
+        formData.append('contato', instrutor.contato || '');
+        formData.append('email', instrutor.email || '');
+        formData.append('graduacao', instrutor.graduacao || '');
+        formData.append('is_active', newStatus);
+
+        await updateInstrutor(aluno.id, formData);
+        const instrutoresData = await fetchInstrutores();
+        setInstrutores(instrutoresData.results);
+    };
+
+    const filteredInstrutores = filterData(instrutores, searchTerm);
+
+    // Handle sorting
+    const handleSort = (option) => {
+        if (sortOption === option) {
+            // If clicking the same column, toggle direction
+            setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+        } else {
+            // New column, default to ascending
+            setSortOption(option);
+            setSortDirection('asc');
+        }
+    };
+
+    const sortedInstrutores = sortData(filteredInstrutores, sortOption, sortDirection);
+
+
+
 
     return (
         <div className="p-4 relative">
@@ -178,6 +206,20 @@ const InstrutoresDashboard = () => {
                         <input type="text" name="contato" placeholder="Contato" value={contato} onChange={(e) => setContato(e.target.value)} required
                             className="border rounded p-2 mb-3 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent" />
 
+                        <div className="mb-3">
+                            <label className="block text-gray-700 text-sm font-bold mb-2">Foto</label>
+                            <input
+                                type="file"
+                                accept="image/jpeg, image/png"
+                                onChange={handleFileChange}
+                                className="border rounded p-2 w-full bg-white"
+                            />
+                            {fotoPreview && (
+                                <div className="mt-2">
+                                    <img src={fotoPreview} alt="Preview" className="w-32 h-32 object-cover rounded border border-gray-300" />
+                                </div>
+                            )}
+                        </div>
 
                         <div className="mb-3">
                             <label className="block text-gray-700 text-sm font-bold mb-2">Graduação</label>
@@ -226,6 +268,9 @@ const InstrutoresDashboard = () => {
                 </div>
             )}
 
+            {/* <SearchBar value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} /> */}
+
+            {/* tabela de instrutores */}
             <div>
                 {instrutores.filter(instrutor => instrutor.username.includes(searchTerm)).map(instrutor => (
                     <div key={instrutor.id}>

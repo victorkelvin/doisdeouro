@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { sortAlunos, filterAlunos } from '../utils/sorting';
+import { sortData, filterData, renderSortIndicator } from '../utils/sorting';
 import useAlunoForm from '../hooks/useAlunoForm';
 import { fetchAlunos, fetchGraduacoes, createAluno, updateAluno } from '../services/alunosApi';
 import { fetchTurmas } from '../services/turmasApi';
@@ -14,7 +14,6 @@ const AlunosDashboard = () => {
     const [selectedAluno, setSelectedAluno] = useState(null);
     const [isFormVisible, setIsFormVisible] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
-    const [sortOption, setSortOption] = useState('nome');
     const [sortDirection, setSortDirection] = useState('asc');
     const [cardPosition, setCardPosition] = useState({ x: 0, y: 0 });
     const cardRef = useRef(null);
@@ -153,47 +152,23 @@ const AlunosDashboard = () => {
         setAlunos(alunosData.results);
     };
 
-    const filteredAlunos = filterAlunos(alunos, searchTerm);
+    const filteredAlunos = filterData(alunos, searchTerm);
 
 
     // Handle sorting
-    const handleSort = (option) => {
-        if (sortOption === option) {
-            // If clicking the same column, toggle direction
-            setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-        } else {
-            // New column, default to ascending
-            setSortOption(option);
-            setSortDirection('asc');
-        }
-    };
+    // const handleSort = (option) => {
+    //     if (sortOption === option) {
+    //         // If clicking the same column, toggle direction
+    //         setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    //     } else {
+    //         // New column, default to ascending
+    //         setSortOption(option);
+    //         setSortDirection('asc');
+    //     }
+    // };
 
-    const sortedAlunos = sortAlunos(filteredAlunos, sortOption, sortDirection);
+    const sortedAlunos = sortData(filteredAlunos, sortDirection);
 
-    // Render sort indicator based on current sort state
-    const renderSortIndicator = (columnName) => {
-        if (sortOption !== columnName) {
-            return (
-                <svg className="w-4 h-4 inline-block ml-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                </svg>
-            );
-        }
-
-        if (sortDirection === 'asc') {
-            return (
-                <svg className="w-4 h-4 inline-block ml-1 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                </svg>
-            );
-        } else {
-            return (
-                <svg className="w-4 h-4 inline-block ml-1 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-            );
-        }
-    };
 
     return (
         <div className="p-4 relative">
@@ -346,23 +321,23 @@ const AlunosDashboard = () => {
                             </th>
 
                             <th
-                                className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer ${sortOption === 'nome' ? 'text-indigo-600' : 'text-gray-500'} hover:bg-gray-100`}
-                                onClick={() => handleSort('nome')}
+                                className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer  hover:bg-gray-100`}
+                                onClick={() => setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')}
                             >
                                 <div className="flex items-center space-x-1">
                                     <span>Nome</span>
-                                    {renderSortIndicator('nome')}
+                                    {renderSortIndicator(sortDirection)}
                                 </div>
                             </th>
                             <th
-                                className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer ${sortOption === 'graduação' ? 'text-indigo-600' : 'text-gray-500'} hover:bg-gray-100`}
+                                className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer  hover:bg-gray-100`}
                             >
                                 <div className="flex items-center space-x-1">
                                     <span>Graduação</span>
                                 </div>
                             </th>
                             <th
-                                className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer ${sortOption === 'turma' ? 'text-indigo-600' : 'text-gray-500'} hover:bg-gray-100`}
+                                className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer  hover:bg-gray-100`}
                             >
                                 <div className="flex items-center space-x-1">
                                     <span>Turma</span>

@@ -3,10 +3,12 @@ import React from "react"
 import { Menu, LogOut, User, Settings } from "lucide-react"
 import LogoAcademia from "./LogoAcademia"
 import { useSidebar } from "../contexts/SidebarContext"
+import { useAuth } from "../contexts/AuthContext"
 
-function TopBar({ userId , onLogout }) {
+function TopBar({ userId  }) {
   const { toggleSidebar } = useSidebar()
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false)
+  const { logout } = useAuth()
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen)
 
@@ -78,7 +80,7 @@ function TopBar({ userId , onLogout }) {
                   className="flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-destructive hover:bg-accent hover:text-destructive"
                   onClick={() => {
                     setIsDropdownOpen(false)
-                    if (onLogout) onLogout()
+                    logout()
                   }}
                 >
                   <LogOut className="h-4 w-4" />

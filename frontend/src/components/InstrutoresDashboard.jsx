@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { fetchInstrutores, createInstrutor, updateInstrutor } from '../services/instrutoresApi';
 import { fetchGraduacoes } from '../services/alunosApi';
 import useInstrutorForm from '../hooks/useInstrutorForm';
-import { filterInstrutores, sortData, renderSortIndicator } from '../utils/sorting';
+import { filterData, sortData, renderSortIndicator } from '../utils/sorting';
 import SearchBar from './SearchBar';
 // import InstrutorCard from './InstrutorCard'; // Create this component for displaying individual instrutor details
 
@@ -17,16 +17,14 @@ const InstrutoresDashboard = () => {
 
     const {
         username,
-        first_name,
-        last_name,
+        nome,
+        setNome,
         is_active,
         setIsActive,
         graduacao,
         email,
         contato,
         setUsername,
-        setFirstName,
-        setLastName,
         editingId,
         setEditingId,
         setGraduacao,
@@ -36,7 +34,12 @@ const InstrutoresDashboard = () => {
         handleFileChange,
         setFotoPreview,
         fotoPreview,
-        foto
+        foto,
+        password,
+        setPassword,
+        passwordConfirm,
+        setPasswordConfirm,
+
     } = useInstrutorForm();
 
     const loadData = async () => {
@@ -94,12 +97,13 @@ const InstrutoresDashboard = () => {
         try {
             const formData = new FormData();
             formData.append('username', username);
-            formData.append('first_name', first_name);
-            formData.append('last_name', last_name);
+            formData.append('nome', nome);
             formData.append('email', email);
             formData.append('graduacao', graduacao);
             formData.append('contato', contato);
-            formData.append('is_active,', is_active,);
+            formData.append('is_active', is_active,);
+            formData.append('password', password);
+
             if (foto) {
                 formData.append('foto', foto);
             }
@@ -111,31 +115,30 @@ const InstrutoresDashboard = () => {
             }
 
             resetForm();
-            fetchInstrutores();
+            const instrutoresData = await fetchInstrutores();
+            setInstrutores(instrutoresData.results);
         } catch (error) {
             console.error('Error submitting form:', error);
-            // Handle error appropriately (show message to user, etc.)
         }
     };
 
     const handleEdit = (instrutor) => {
         setUsername(instrutor.username);
-        setIsActive(instrutor.is_active === true || instrutor.is_active === "true"); // Convert to boolean
-        setFirstName(instrutor.first_name);
-        setLastName(instrutor.last_name || '');
+        setIsActive(instrutor.is_active === true || instrutor.is_active === "true"); 
+        setNome(instrutor.nome);
         setContato(instrutor.contato || '');
         setEmail(instrutor.email || '');
         setGraduacao(instrutor.graduacao || '');
         setFotoPreview(instrutor.foto);
         setEditingId(instrutor.id);
+        setPassword(instrutor.password || '');
     };
 
     const toggleAtivoStatus = async (instrutor) => {
         const newStatus = !(instrutor.is_active === true || instrutor.is_active === "true");
         const formData = new FormData();
         formData.append('username', instrutor.username);
-        formData.append('first_name', instrutor.first_name || '');
-        formData.append('last_name', instrutor.last_name || '');
+        formData.append('nome', instrutor.nome || '');
         formData.append('contato', instrutor.contato || '');
         formData.append('email', instrutor.email || '');
         formData.append('graduacao', instrutor.graduacao || '');
@@ -146,7 +149,7 @@ const InstrutoresDashboard = () => {
         setInstrutores(instrutoresData.results);
     };
 
-    const filteredInstrutores = filterInstrutores(instrutores, searchTerm);
+    const filteredInstrutores = filterData(instrutores, searchTerm);
 
 
     const sortedInstrutores = sortData(filteredInstrutores, sortDirection);
@@ -181,19 +184,27 @@ const InstrutoresDashboard = () => {
             {isFormVisible && (
                 <div className="bg-white p-6 rounded-lg shadow-md mb-6 border border-gray-200 transition-all duration-300">
                     <h2 className="text-lg font-semibold mb-4 text-gray-800">{editingId ? 'Editar Instrutor' : 'Adicionar Novo Instrutor'}</h2>
-                    <form onSubmit={handleSubmit}>
-                        {/* <input type="text" placeholder="Nome" value={nome} onChange={(e) => s(e.target.value)} required
-                            className="border rounded p-2 mb-3 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent"
-                        /> */}
+                    <form onSubmit={(e) => {
+                        e.preventDefault();
+                        if (password !== passwordConfirm) {
+                            alert("As senhas não coincidem!");
+                            return;
+                        }
+                        handleSubmit(e);
+                    }}>
+
                         <input type="text" name="username" placeholder="Nome de Usuário" value={username} onChange={(e) => setUsername(e.target.value)} required
                             className="border rounded p-2 mb-3 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent" />
-                        <input type="text" name="first_name" placeholder="Nome" value={first_name} onChange={(e) => setFirstName(e.target.value)} required
+                        <input type="password" name="password" placeholder="Senha" value={password} onChange={(e) => setPassword(e.target.value)} 
                             className="border rounded p-2 mb-3 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent" />
-                        <input type="text" name="last_name" placeholder="Sobrenome" value={last_name} onChange={(e) => setLastName(e.target.value)} 
+                        <input type="password" name="passwordConfirm" placeholder="Confirmação de Senha" value={passwordConfirm} onChange={(e) => setPasswordConfirm(e.target.value)} required={!!password}
                             className="border rounded p-2 mb-3 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent" />
-                        <input type="email" name="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} 
+
+                        <input type="text" name="nome" placeholder="Nome" value={nome} onChange={(e) => setNome(e.target.value)} required
                             className="border rounded p-2 mb-3 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent" />
-                        <input type="text" name="contato" placeholder="Contato" value={contato} onChange={(e) => setContato(e.target.value)} 
+                        <input type="email" name="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}
+                            className="border rounded p-2 mb-3 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent" />
+                        <input type="text" name="contato" placeholder="Contato" value={contato} onChange={(e) => setContato(e.target.value)}
                             className="border rounded p-2 mb-3 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent" />
 
                         <div className="mb-3">
@@ -282,7 +293,6 @@ const InstrutoresDashboard = () => {
                                 Nome
                                 {renderSortIndicator(sortDirection)}
                             </th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sobrenome</th>
                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Graduação</th>
                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contato</th>
                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
@@ -293,32 +303,37 @@ const InstrutoresDashboard = () => {
                     </thead>
 
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {sortedInstrutores.map((instrutor) => (
-                            <tr key={instrutor.id} className="hover:bg-gray-50 transition-all duration-200 cursor-pointer">
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    <input
-                                        type="checkbox"
-                                        checked={instrutor.is_active === true || instrutor.is_active === "true"}
-                                        onChange={() => toggleAtivoStatus(instrutor)}
-                                        className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                                    />
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{instrutor.username}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{instrutor.first_name}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{instrutor.last_name}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{instrutor.graduacao}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{instrutor.contato}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{instrutor.email}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <button
-                                        onClick={() => handleEdit(instrutor)}
-                                        className="bg-amber-500 hover:bg-amber-600 text-white rounded px-3 py-1 transition-colors duration-200"
-                                    >
-                                        Editar
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
+                        {sortedInstrutores.map((instrutor) => {
+                            const graduacaoObj = graduacoes.find(grad => grad.id === instrutor.graduacao);
+
+                            return (
+
+                                <tr key={instrutor.id} className="hover:bg-gray-50 transition-all duration-200 cursor-pointer">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <input
+                                            type="checkbox"
+                                            checked={instrutor.is_active === true || instrutor.is_active === "true"}
+                                            onChange={() => toggleAtivoStatus(instrutor)}
+                                            className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                                        />
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{instrutor.username}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{instrutor.nome}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{graduacaoObj ? graduacaoObj.faixa : 'N/A'}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{instrutor.contato}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{instrutor.email}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button
+                                            onClick={() => handleEdit(instrutor)}
+                                            className="bg-amber-500 hover:bg-amber-600 text-white rounded px-3 py-1 transition-colors duration-200"
+                                        >
+                                            Editar
+                                        </button>
+                                    </td>
+                                </tr>
+                            )
+                        })
+                        }
 
 
 

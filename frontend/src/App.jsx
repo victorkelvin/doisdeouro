@@ -1,25 +1,39 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './pages/Login';
 import Main from './pages/Main';
+// Import your other components
 
+// Protected route component
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <div>Loading...</div>; // Or your loading component
+  }
+  
+  return isAuthenticated ? children : <Navigate to="/login" />;
+};
+
+// App with AuthProvider
 const App = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem('token') ? true : false); // Track authentication state
-
-    const handleLogout = () => {
-        localStorage.clear() // Clear all info in LocalStorage
-        setIsAuthenticated(false); // Update authentication state
-    };
-
-    return (
-        <Router>
-            <Routes>
-                <Route path="/*" element={isAuthenticated ? <Navigate to="/main/" /> : <Navigate to="/login" />} />
-                <Route path="/login" element={isAuthenticated ? <Navigate to="/main/" /> : <Login setIsAuthenticated={setIsAuthenticated} />} />
-                <Route path="/main" element={isAuthenticated ? <Main onLogout={handleLogout} /> : <Navigate to="/login" />} />
-            </Routes>
-        </Router>
-    );
+  return (
+    <Router>
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/main" element={
+            <ProtectedRoute>
+              <Main />
+            </ProtectedRoute>
+          } />
+          {/* Your other routes */}
+          <Route path="*" element={<Navigate to="/login" />} />
+        </Routes>
+      </AuthProvider>
+    </Router>
+  );
 };
 
 export default App;

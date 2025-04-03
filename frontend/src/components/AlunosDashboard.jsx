@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { sortData, renderSortIndicator, filterAlunos } from '../utils/sorting';
+import { sortData, renderSortIndicator, filterData } from '../utils/sorting';
 import useAlunoForm from '../hooks/useAlunoForm';
 import { fetchAlunos, fetchGraduacoes, createAluno, updateAluno } from '../services/alunosApi';
 import { fetchTurmas } from '../services/turmasApi';
 import SearchBar from './SearchBar';
-import AlunoCard from './AlunoCard';
+import SpanCard from './SpanCard';
 
 
 const AlunosDashboard = () => {
@@ -116,7 +116,8 @@ const AlunosDashboard = () => {
             }
 
             resetForm();
-            fetchAlunos();
+            const alunosData = await fetchAlunos();
+            setAlunos(alunosData.results);
         } catch (error) {
             console.error('Error submitting form:', error);
             // Handle error appropriately (show message to user, etc.)
@@ -152,7 +153,7 @@ const AlunosDashboard = () => {
         setAlunos(alunosData.results);
     };
 
-    const filteredAlunos = filterAlunos(alunos, searchTerm);
+    const filteredAlunos = filterData(alunos, searchTerm);
 
 
     // Handle sorting
@@ -399,7 +400,7 @@ const AlunosDashboard = () => {
 
             {
                 selectedAluno && (
-                    <AlunoCard aluno={selectedAluno} position={cardPosition} setCardPosition={setCardPosition} />
+                    <SpanCard data={selectedAluno} position={cardPosition} setCardPosition={setCardPosition} />
                     
 /*                     <div
                         ref={cardRef}

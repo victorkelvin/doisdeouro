@@ -3,8 +3,7 @@ import { useState } from "react";
 
 const useInstrutorForm = () => {
     const [username, setUsername] = useState("");
-    const [first_name, setFirstName] = useState("");
-    const [last_name, setLastName] = useState("");
+    const [nome, setNome] = useState("");
     const [is_active, setIsActive] = useState(false);
     const [graduacao, setGraduacao] = useState("");
     const [email, setEmail] = useState("");
@@ -12,11 +11,12 @@ const useInstrutorForm = () => {
     const [editingId, setEditingId] = useState(null);
     const [foto, setFoto] = useState(null);
     const [fotoPreview, setFotoPreview] = useState("");
+    const [password, setPassword] = useState("");
+    const [passwordConfirm, setPasswordConfirm] = useState("");
 
     const resetForm = () => {
         setUsername("");
-        setFirstName("");
-        setLastName("");
+        setNome("");
         setIsActive(false);
         setGraduacao("");
         setEmail("");
@@ -32,8 +32,7 @@ const useInstrutorForm = () => {
 
     return {
         username,
-        first_name,
-        last_name,
+        nome,
         is_active,
         setIsActive,
         graduacao,
@@ -41,8 +40,7 @@ const useInstrutorForm = () => {
         contato,
         editingId,
         setUsername,
-        setFirstName,
-        setLastName,
+        setNome,
         setGraduacao,
         setEmail,
         setContato,
@@ -53,6 +51,11 @@ const useInstrutorForm = () => {
         fotoPreview,
         foto,
         setFoto,
+        password,
+        setPassword,
+        passwordConfirm,
+        setPasswordConfirm
+        
     };
 }
 

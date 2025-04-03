@@ -8,17 +8,12 @@ export const sortData = (data, sortDirection) => {
     });
 };
 
-export const filterAlunos = (data, searchTerm) => {
+export const filterData = (data, searchTerm) => {
     return data.filter(d =>
         d.nome.toLowerCase().includes(searchTerm.toLowerCase())
     );
 };
 
-export const filterInstrutores = (data, searchTerm) => {
-    return data.filter(d =>
-        d.first_name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-};
 
 
 // Render sort indicator based on current sort state

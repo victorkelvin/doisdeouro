@@ -11,7 +11,7 @@ import FrequenciaDashboard from '../components/FrequenciaDashboard';
 import GraduacoesDashboard from '../components/GraduacoesDashboard';
 
 const Main = ({ onLogout }) => {
-    const userId = useState(localStorage.getItem('userId'))[0];
+    const user_id = useState(localStorage.getItem('user_id'))[0];
     const [selectedDashboard, setSelectedDashboard] = useState(''); // Default dashboard
 
 
@@ -36,7 +36,7 @@ const Main = ({ onLogout }) => {
         <div className="flex h-screen overflow-hidden">
             <Sidebar selectedDashboard={selectedDashboard} setSelectedDashboard={setSelectedDashboard} /> {/* Pass function to Sidebar */}
             <div className="flex flex-1 flex-col">
-                <TopBar onLogout={onLogout} userId={userId} />
+                <TopBar onLogout={onLogout} userId={user_id} />
                 <div className="flex-1 overflow-auto">
                     {renderDashboard()} {/* Render the selected dashboard */}
                 </div>

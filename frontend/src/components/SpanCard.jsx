@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { formatDate } from '../utils/utils';
 
-const AlunoCard = ({ aluno, position, setCardPosition }) => {
+const SpanCard = ({ data, position, setCardPosition }) => {
     useEffect(() => {
         const handleMouseMove = (e) => {
             const viewportWidth = window.innerWidth;
@@ -42,24 +42,25 @@ const AlunoCard = ({ aluno, position, setCardPosition }) => {
         >
             <div className="flex flex-col items-center">
                 <img
-                    src={aluno.foto}
-                    alt={aluno.nome}
+                    src={data.foto}
+                    alt={data.nome}
                     className="w-32 h-32 object-cover rounded-lg mb-2 border border-gray-200"
                 />
-                <h2 className='font-bold text-lg text-gray-900'>{aluno.nome}</h2>
+                <h2 className='font-bold text-lg text-gray-900'>{data.nome}</h2>
                 <div className="w-full mt-2">
-                    <p className="text-sm"><span className="font-semibold">Graduação:</span> {aluno.graduacao?.faixa || 'N/A'}</p>
+                    <p className="text-sm"><span className="font-semibold">Graduação:</span> {data.graduacao?.faixa || 'N/A'}</p>
                     <p className="text-sm"><span className="font-semibold">Status:</span>
-                        <span className={`ml-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${aluno.ativo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                            {aluno.ativo ? 'Ativo' : 'Inativo'}
+                        <span className={`ml-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${data.ativo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                            {data.ativo ? 'Ativo' : 'Inativo'}
                         </span>
                     </p>
-                    <p className="text-sm"><span className="font-semibold">Data de Nascimento:</span> {aluno.data_nascimento ? formatDate(aluno.data_nascimento) : 'N/A'}</p>
-                    <p className="text-sm"><span className="font-semibold">Contato:</span> {aluno.contato || 'N/A'}</p>
+                    <p className="text-sm"><span className="font-semibold">Data de Nascimento:</span> {data.data_nascimento ? formatDate(data.data_nascimento) : 'N/A'}</p>
+                    <p className="text-sm"><span className="font-semibold">Contato:</span> {data.contato || 'N/A'}</p>
                 </div>
             </div>
         </div>
     );
 };
 
-export default AlunoCard;
+
+export default SpanCard;

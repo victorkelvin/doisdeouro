@@ -31,7 +31,8 @@ class InstrutorUpdateSerializer(serializers.ModelSerializer):
         model = Instrutor
         fields = ['id', 'email', 'username', 'nome', 'password', 'graduacao', 'contato', 'foto', 'is_active']
         extra_kwargs = {
-            'password': {'required': False}
+            'password': {'required': False},
+            'is_active': {'required': False}
         }
     
     def update(self, instance, validated_data):
@@ -48,9 +49,7 @@ class InstrutorUpdateSerializer(serializers.ModelSerializer):
         return instance
 
 class InstrutorListSerializer(serializers.ModelSerializer):
-    """Serializer para listar instrutores (sem senha)"""
-    graduacao_nome = serializers.CharField(source='graduacao.faixa', read_only=True)
     
     class Meta:
         model = Instrutor
-        fields = ['id', 'email', 'username', 'nome', 'graduacao', 'graduacao_faixa', 'contato', 'foto', 'is_active']
+        fields = ['id', 'email', 'username', 'nome', 'graduacao', 'contato', 'foto', 'is_active']

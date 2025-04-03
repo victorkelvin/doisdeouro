@@ -11,7 +11,8 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     
     # Include the academia URLs with authentication
-    path('api/', include(('apps.academia.urls'))),
+    path('api/', include(('apps.academia.urls' , 'apps.contas.urls'))),
+    path('api/contas/', include(('apps.contas.urls'))),
 ]
 
 if settings.DEBUG:

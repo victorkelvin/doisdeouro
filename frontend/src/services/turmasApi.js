@@ -40,7 +40,7 @@ export const createTurma = async (formData) => {
  */
 export const updateTurma = async (id, formData) => {
     try {
-        return await apiFormDataRequest(`${turmasEndpoint}${id}/`, 'put', formData);
+        return await apiRequest(`${turmasEndpoint}${id}/`, 'put', formData);
     } catch (error) {
         console.error('Error updating turma:', error);
         throw error;

@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { formatDate } from '../utils/utils';
 import { sortAlunos, filterAlunos } from '../utils/sorting';
 import useAlunoForm from '../hooks/useAlunoForm';
 import { fetchAlunos, fetchGraduacoes, createAluno, updateAluno } from '../services/alunosApi';
 import { fetchTurmas } from '../services/turmasApi';
+import SearchBar from './SearchBar';
+import AlunoCard from './AlunoCard';
 
 
 const AlunosDashboard = () => {
@@ -127,10 +128,10 @@ const AlunosDashboard = () => {
         setNome(aluno.nome);
         setAtivo(aluno.ativo === true || aluno.ativo === "true"); // Convert to boolean
         setDataNascimento(aluno.data_nascimento);
-        setContato(aluno.contato);
-        setEmail(aluno.email);
-        setGraduacao(aluno.graduacao);
-        setTurma(aluno.turma);
+        setContato(aluno.contato || '');
+        setEmail(aluno.email || '');
+        setGraduacao(aluno.graduacao || '');
+        setTurma(aluno.turma || '');
         setEditingId(aluno.id);
         setFotoPreview(aluno.foto);
     };
@@ -333,22 +334,7 @@ const AlunosDashboard = () => {
                 </div>
             )}
 
-            {/* Search Bar */}
-            <div className="mb-4 relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-                    </svg>
-                </div>
-                <input
-                    type="text"
-                    placeholder="Buscar Aluno"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent"
-                />
-            </div>
-
+            <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
             <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
@@ -438,7 +424,9 @@ const AlunosDashboard = () => {
 
             {
                 selectedAluno && (
-                    <div
+                    <AlunoCard aluno={selectedAluno} position={cardPosition} setCardPosition={setCardPosition} />
+                    
+/*                     <div
                         ref={cardRef}
                         className="fixed bg-white rounded-lg border p-4 shadow-lg max-w-xs z-50"
                         style={{
@@ -467,7 +455,7 @@ const AlunosDashboard = () => {
                                 <p className="text-sm"><span className="font-semibold">Contato:</span> {selectedAluno.contato || 'N/A'}</p>
                             </div>
                         </div>
-                    </div>
+                    </div> */
                 )
             }
         </div >

@@ -38,7 +38,6 @@ const apiFormDataRequest = async (endpoint, method, formData) => {
         method,
         headers: {
             'Authorization': `Bearer ${getToken()}`,
-            'Content-Type': 'application/json',
         },
         body: formData,
     };

@@ -28,7 +28,7 @@ const TurmasDashboard = () => {
             formData.append('dias_da_semana', diasDaSemana);
             formData.append('horario', horario);
 
-            const body = JSON.stringify({ nome, dias_da_semana: diasDaSemana, horario })
+            const body = { nome, dias_da_semana: diasDaSemana, horario }
 
             if (editingId) {
                 await updateTurma(editingId, body);

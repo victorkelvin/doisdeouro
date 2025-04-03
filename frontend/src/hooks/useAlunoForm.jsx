@@ -41,6 +41,7 @@ const useAlunoForm = () => {
         ativo,
         foto,
         fotoPreview,
+        setFotoPreview,
         editingId,
         setNome,
         setDataNascimento,

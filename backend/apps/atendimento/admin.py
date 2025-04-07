@@ -1,4 +1,4 @@
 from django.contrib import admin
-from .models import Frequencia
+from .models import Aula
 
-admin.site.register(Frequencia)
+admin.site.register(Aula)

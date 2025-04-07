@@ -7,7 +7,7 @@ import Footer from '../components/Footer';
 import AlunosDashboard from '../components/AlunosDashboard';
 import TurmasDashboard from '../components/TurmasDashboard';
 import InstrutoresDashboard from '../components/InstrutoresDashboard';
-import FrequenciaDashboard from '../components/FrequenciaDashboard';
+import AulaDashboard from '../components/AulaDashboard';
 import GraduacoesDashboard from '../components/GraduacoesDashboard';
 
 const Main = ({ onLogout }) => {
@@ -23,8 +23,8 @@ const Main = ({ onLogout }) => {
                 return <TurmasDashboard />;
             case 'instrutores':
                 return <InstrutoresDashboard />;
-            case 'frequencia':
-                return <FrequenciaDashboard />;
+            case 'aulas':
+                return <AulaDashboard />;
             case 'graduacoes':
                 return <GraduacoesDashboard />;
             default:

@@ -8,27 +8,27 @@ const sidebarItems = [
   {
     title: "Alunos",
     icon: Users,
-    href: "alunos", // Correct path
+    href: "alunos", 
   },
   {
     title: "Turmas",
     icon: BookOpen,
-    href: "turmas", // Correct path
+    href: "turmas", 
   },
   {
     title: "Instrutores",
     icon: UserCog,
-    href: "instrutores", // Correct path
+    href: "instrutores", 
   },
   {
-    title: "Listas de Frequência",
+    title: "Aulas",
     icon: ClipboardList,
-    href: "frequencia", // Correct path
+    href: "aulas", 
   },
   {
     title: "Graduações",
     icon: Trophy,
-    href: "graduacoes", // Correct path
+    href: "graduacoes", 
   },
 ];
 

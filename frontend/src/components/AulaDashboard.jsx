@@ -1,12 +1,12 @@
 import React from 'react';
 
-const FrequenciaDashboard = () => {
+const AulaDashboard = () => {
     return (
         <div>
-            <h1>Frequência Dashboard</h1>
+            <h1>Aulas Dashboard</h1>
             {/* Add content for Frequência Dashboard here */}
         </div>
     );
 };
 
-export default FrequenciaDashboard;
+export default AulaDashboard;

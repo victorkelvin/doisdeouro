@@ -56,7 +56,6 @@ const InstrutoresDashboard = () => {
     }, []);
 
 
-    {/* handle selected instrutor  */ }
     const handleMouseEnter = (instrutor, e) => {
         setSelectedInstrutor(instrutor);
 

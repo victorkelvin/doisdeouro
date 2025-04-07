@@ -1,7 +1,7 @@
 import { apiRequest, apiFormDataRequest } from './baseApi';
 
-const alunosEndpoint = 'alunos/';
-const graduacoesEndpoint = 'graduacoes/';
+const alunosEndpoint = 'academia/alunos/';
+const graduacoesEndpoint = 'academia/graduacoes/';
 
 export const fetchAlunos = async () => {
     return await apiRequest(alunosEndpoint, 'get');

@@ -1,6 +1,6 @@
 import { apiRequest, apiFormDataRequest } from "./baseApi";
 
-const turmasEndpoint = 'turmas/';
+const turmasEndpoint = 'academia/turmas/';
 
 /**
  * Fetches all turmas from the API.

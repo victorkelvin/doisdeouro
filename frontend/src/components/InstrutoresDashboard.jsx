@@ -307,6 +307,8 @@ const InstrutoresDashboard = () => {
                     <tbody className="bg-white divide-y divide-gray-200">
                         {sortedInstrutores.map((instrutor) => {
                             const graduacaoObj = graduacoes.find(grad => grad.id === instrutor.graduacao);
+                            const isActive = instrutor.is_active === true || instrutor.is_active === "true";
+
 
                             return (
 
@@ -321,6 +323,12 @@ const InstrutoresDashboard = () => {
                                             onChange={() => toggleAtivoStatus(instrutor)}
                                             className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                                         />
+                                        <span className={`ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${isActive
+                                            ? 'bg-green-100 text-green-800'
+                                            : 'bg-red-100 text-red-800'
+                                            }`}>
+                                            {isActive ? 'Ativo' : 'Inativo'}
+                                        </span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{instrutor.username}</td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{instrutor.nome}</td>

@@ -11,7 +11,7 @@ from .serializers import (
 )
 
 class CustomPagination(PageNumberPagination):
-    page_size = 10
+    page_size = 20
 
 class AulaViewSet(viewsets.ModelViewSet):
     queryset = Aula.objects.all()

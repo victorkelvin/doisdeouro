@@ -23,20 +23,20 @@ const AulaDashboard = () => {
     // Modified form state to handle multiple selections
     const {
         data,
-        aluno_presente, 
+        aluno_presente,
         horario_inicio,
         horario_fim,
         observacao,
         turma,
-        instrutores_aula, 
+        instrutores_aula,
         editingId,
         setData,
-        setAlunoPresente, 
+        setAlunoPresente,
         setHorarioInicio,
         setHorarioFim,
         setObservacao,
         setTurma,
-        setInstrutoresAula, 
+        setInstrutoresAula,
         resetForm,
         setEditingId,
     } = useAulaForm();
@@ -45,11 +45,11 @@ const AulaDashboard = () => {
         const aulasData = await fetchAulas();
         setAulas(aulasData.results);
         const turmasData = await fetchTurmas();
-        setTurmas(turmasData.results);
+        setTurmas(turmasData);
         const alunosData = await fetchAlunos();
         setAlunos(alunosData.results);
         const instrutoresData = await fetchInstrutores();
-        setInstrutores(instrutoresData.results);
+        setInstrutores(instrutoresData);
     };
 
     useEffect(() => {
@@ -91,40 +91,41 @@ const AulaDashboard = () => {
         setSelectedAula(null);
     };
 
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         try {
             const formData = new FormData();
             formData.append('data', data);
-            
-            // Handle multiple alunos
-            aluno_presente.forEach(alunoId => {
-                formData.append('aluno_presente', alunoId);
-            });
-            
+            formData.append('aluno_presente', aluno_presente);
             formData.append('horario_inicio', horario_inicio);
             formData.append('horario_fim', horario_fim);
             formData.append('observacao', observacao);
             formData.append('turma', turma);
-            
-            // Handle multiple instrutores
-            instrutores_aula.forEach(instrutorId => {
-                formData.append('instrutor', instrutorId);
-            });
+            formData.append('instrutor', instrutores_aula);
+    
+            const body = {
+                data,
+                aluno_presente,
+                horario_inicio,
+                horario_fim,
+                observacao,
+                turma,
+                instrutor : instrutores_aula
+            };
 
             if (editingId) {
-                await updateAula(editingId, formData);
+                await updateAula(editingId, body);
             } else {
-                await createAula(formData);
+                await createAula(body);
             }
-
+    
             resetForm();
             const aulasData = await fetchAulas();
             setAulas(aulasData.results);
         } catch (error) {
             console.error('Error submitting form:', error);
-            // Handle error appropriately (show message to user, etc.)
         }
     };
 
@@ -153,9 +154,9 @@ const AulaDashboard = () => {
     // Filter aulas by date
     const filterByDate = (aulas, searchTerm) => {
         if (!searchTerm) return aulas;
-        
+
         const normalizedSearchTerm = searchTerm.toLowerCase().trim();
-        
+
         return aulas.filter(aula => {
             const aulaDate = formatDate(aula.data).toLowerCase();
             return aulaDate.includes(normalizedSearchTerm);
@@ -164,7 +165,7 @@ const AulaDashboard = () => {
 
     // Filter and sort data - updated to filter by date
     const filteredAulas = filterByDate(aulas, searchTerm);
-    const sortedAulas = sortData(filteredAulas, sortDirection);
+    // const sortedAulas = sortData(filteredAulas, sortDirection);
 
     // Count alunos in an aula
     const countAlunos = (aula) => {
@@ -175,7 +176,7 @@ const AulaDashboard = () => {
     // Get instructor names for an aula
     const getInstrutorNames = (aula) => {
         if (!aula.instrutores_aula || !aula.instrutores_aula.length) return 'N/A';
-        
+
         return aula.instrutores_aula.map(instId => {
             const instrutor = instrutores.find(i => i.id === instId);
             return instrutor ? instrutor.nome : '';
@@ -186,13 +187,13 @@ const AulaDashboard = () => {
     const handleAlunosChange = (e) => {
         const options = e.target.options;
         const selectedValues = [];
-        
+
         for (let i = 0; i < options.length; i++) {
             if (options[i].selected) {
-                selectedValues.push(options[i].value);
+                selectedValues.push(parseInt(options[i].value));
             }
         }
-        
+
         setAlunoPresente(selectedValues);
     };
 
@@ -200,13 +201,13 @@ const AulaDashboard = () => {
     const handleInstrutoresChange = (e) => {
         const options = e.target.options;
         const selectedValues = [];
-        
+
         for (let i = 0; i < options.length; i++) {
             if (options[i].selected) {
-                selectedValues.push(options[i].value);
+                selectedValues.push(parseInt(options[i].value));
             }
         }
-        
+
         setInstrutoresAula(selectedValues);
     };
 
@@ -242,7 +243,7 @@ const AulaDashboard = () => {
                             <div>
                                 <label className="block text-gray-700 text-sm font-bold mb-2">Data</label>
                                 <input
-                                    type="datetime-local"
+                                    type="date"
                                     value={data}
                                     onChange={(e) => setData(e.target.value)}
                                     required
@@ -367,7 +368,7 @@ const AulaDashboard = () => {
             <div className="mb-4">
                 <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} placeholder="Buscar por data (DD/MM/AAAA)" />
             </div>
-            
+
             <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
@@ -402,7 +403,7 @@ const AulaDashboard = () => {
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {sortedAulas.map((aula) => {
+                        {aulas.map((aula) => {
                             // Find related objects
                             const turmaObj = turmas.find(t => t.id === aula.turma);
 
@@ -443,7 +444,7 @@ const AulaDashboard = () => {
             </div>
 
             {selectedAula && (
-                <SpanCard 
+                <SpanCard
                     ref={cardRef}
                     data={{
                         ...selectedAula,
@@ -452,9 +453,9 @@ const AulaDashboard = () => {
                         instrutoresNames: getInstrutorNames(selectedAula),
                         formattedDate: formatDate(selectedAula.data),
                         formattedHorario: `${formatTime(selectedAula.horario_inicio)} - ${formatTime(selectedAula.horario_fim)}`
-                    }} 
-                    position={cardPosition} 
-                    setCardPosition={setCardPosition} 
+                    }}
+                    position={cardPosition}
+                    setCardPosition={setCardPosition}
                 />
             )}
         </div>

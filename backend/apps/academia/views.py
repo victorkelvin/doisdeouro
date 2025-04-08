@@ -19,21 +19,18 @@ class AlunoViewSet(viewsets.ModelViewSet):
 
 class GraduacaoViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
-    pagination_class = CustomPagination
 
     queryset = Graduacao.objects.all().order_by('id')
     serializer_class = GraduacaoSerializer
 
 class TurmaViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
-    pagination_class = CustomPagination
 
     queryset = Turma.objects.all().order_by('nome')
     serializer_class = TurmaSerializer
 
 class DiaSemanaViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
-    pagination_class = CustomPagination
 
     queryset = DiaSemana.objects.all()
     serializer_class = DiaSemanaSerializer

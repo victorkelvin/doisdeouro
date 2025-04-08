@@ -46,9 +46,9 @@ const AlunosDashboard = () => {
         const alunosData = await fetchAlunos();
         setAlunos(alunosData.results);
         const graduacoesData = await fetchGraduacoes();
-        setGraduacoes(graduacoesData.results);
+        setGraduacoes(graduacoesData);
         const turmasData = await fetchTurmas();
-        setTurmas(turmasData.results);
+        setTurmas(turmasData);
     };
 
     useEffect(() => {

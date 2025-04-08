@@ -1,16 +1,29 @@
-import { apiRequest, apiFormDataRequest } from './baseApi';
+import { apiRequest } from './baseApi';
 
 const aulasEndpoint = 'atendimento/aulas/';
 
 export const fetchAulas = async () => {
-    return await apiRequest(aulasEndpoint);
+    try {
+        return await apiRequest(aulasEndpoint);
+    } catch (error) {
+        console.error('Error fetching aulas:', error);
+    }
 };
 
 export const createAula = async (data) => {
-    return await apiFormDataRequest(aulasEndpoint, 'post', data);
+    try {
+        return await apiRequest(aulasEndpoint, 'post', data);
+
+    } catch (error) {
+        console.error('Error creating aula:', error);
+    }
 };
 
 export const updateAula = async (id, data) => {
-    return await apiFormDataRequest(`${aulasEndpoint}${id}/`, 'put', data);
+    try {
+        return await apiRequest(`${aulasEndpoint}${id}/`, 'put', data);
+    } catch (error) {
+        console.error('Error updating aula:', error);
+    }
 };
 

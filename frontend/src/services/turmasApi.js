@@ -1,4 +1,4 @@
-import { apiRequest, apiFormDataRequest } from "./baseApi";
+import { apiRequest } from "./baseApi";
 
 const turmasEndpoint = 'academia/turmas/';
 
@@ -24,7 +24,7 @@ export const fetchTurmas = async () => {
  */
 export const createTurma = async (formData) => {
     try {
-        return await apiFormDataRequest(turmasEndpoint, 'post', formData);
+        return await apiRequest(turmasEndpoint, 'post', formData);
     } catch (error) {
         console.error('Error creating turma:', error);
         throw error;

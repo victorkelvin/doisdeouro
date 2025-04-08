@@ -8,7 +8,7 @@ import { SidebarProvider } from './contexts/SidebarContext'; // Import SidebarPr
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-      <SidebarProvider> {/* Wrap App with SidebarProvider */}
+      <SidebarProvider> 
           <App />
       </SidebarProvider>
   </React.StrictMode>

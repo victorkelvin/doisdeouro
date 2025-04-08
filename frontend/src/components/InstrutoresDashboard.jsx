@@ -46,9 +46,9 @@ const InstrutoresDashboard = () => {
 
     const loadData = async () => {
         const instrutoresData = await fetchInstrutores();
-        setInstrutores(instrutoresData.results);
+        setInstrutores(instrutoresData);
         const graduacoesData = await fetchGraduacoes();
-        setGraduacoes(graduacoesData.results);
+        setGraduacoes(graduacoesData);
     };
 
     useEffect(() => {
@@ -117,7 +117,7 @@ const InstrutoresDashboard = () => {
 
             resetForm();
             const instrutoresData = await fetchInstrutores();
-            setInstrutores(instrutoresData.results);
+            setInstrutores(instrutoresData);
         } catch (error) {
             console.error('Error submitting form:', error);
         }
@@ -147,7 +147,7 @@ const InstrutoresDashboard = () => {
 
         await updateInstrutor(instrutor.id, formData);
         const instrutoresData = await fetchInstrutores();
-        setInstrutores(instrutoresData.results);
+        setInstrutores(instrutoresData);
     };
 
     const filteredInstrutores = filterData(instrutores, searchTerm);

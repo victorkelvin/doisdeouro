@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import Instrutor
 
 class InstrutorCreateSerializer(serializers.ModelSerializer):
-    """Serializer para criar instrutores (com senha)"""
+
     password = serializers.CharField(write_only=True, required=True)
     
     class Meta:
@@ -10,7 +10,6 @@ class InstrutorCreateSerializer(serializers.ModelSerializer):
         fields = ['id', 'email', 'username', 'nome', 'password', 'graduacao', 'contato', 'foto', 'is_active']
     
     def create(self, validated_data):
-        # Cria o usuário usando o manager que já criptografa a senha
         instrutor = Instrutor.objects.create_user(
             email=validated_data['email'],
             username=validated_data['username'],
@@ -36,12 +35,10 @@ class InstrutorUpdateSerializer(serializers.ModelSerializer):
         }
     
     def update(self, instance, validated_data):
-        # Se a senha foi fornecida, criptografa e salva
         password = validated_data.pop('password', None)
         if password:
             instance.set_password(password)
         
-        # Atualiza os outros campos
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         

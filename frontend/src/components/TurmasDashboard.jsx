@@ -10,12 +10,12 @@ const TurmasDashboard = () => {
 
 
     useEffect(() => {
-        fetchTurmasData();
+        loadData();
     }, []);
 
-    const fetchTurmasData = async () => {
+    const loadData = async () => {
         const response = await fetchTurmas();
-        setTurmas(response.results);
+        setTurmas(response);
     };
 
 
@@ -41,7 +41,7 @@ const TurmasDashboard = () => {
         }
 
         resetForm();
-        fetchTurmasData();
+        loadData();
     };
 
     const handleEdit = (turma) => {

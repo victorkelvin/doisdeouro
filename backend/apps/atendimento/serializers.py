@@ -4,18 +4,20 @@ from apps.atendimento.models import Aula
 class AulaCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Aula
-        fields = ['id', 'data', 'aluno_presente', 'horario_inicio', 'horario_fim', 
-                 'observacao', 'turma', 'instrutor']
+        fields = ['id', 'data', 'alunos_presentes', 'horario_inicio', 'horario_fim', 
+                 'observacao', 'turma', 'instrutores']
     
     def create(self, validated_data):
         aula = Aula.objects.create(**validated_data)
         return aula
 
+
+
 class AulaUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Aula
-        fields = ['id', 'data', 'aluno_presente', 'horario_inicio', 'horario_fim', 
-                 'observacao', 'turma', 'instrutor']
+        fields = ['id', 'data', 'alunos_presentes', 'horario_inicio', 'horario_fim', 
+                 'observacao', 'turma', 'instrutores']
     
     def update(self, instance, validated_data):
 
@@ -25,11 +27,11 @@ class AulaUpdateSerializer(serializers.ModelSerializer):
         return instance
 
 class AulaListSerializer(serializers.ModelSerializer):
-    aluno_presente = serializers.StringRelatedField()
+    alunos_presentes = serializers.StringRelatedField()
     turma = serializers.StringRelatedField()
-    instrutor = serializers.StringRelatedField()
+    instrutores = serializers.StringRelatedField()
     
     class Meta:
         model = Aula
-        fields = ['id', 'data', 'aluno_presente', 'horario_inicio', 'horario_fim', 
-                 'observacao', 'turma', 'instrutor']
+        fields = ['id', 'data', 'alunos_presentes', 'horario_inicio', 'horario_fim', 
+                 'observacao', 'turma', 'instrutores']

@@ -1,18 +1,13 @@
-from rest_framework import viewsets, status
+from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .models import Instrutor
 from .serializers import InstrutorCreateSerializer, InstrutorUpdateSerializer, InstrutorListSerializer
-from rest_framework.pagination import PageNumberPagination
 
-
-class CustomPagination(PageNumberPagination):
-    page_size = 10
 
 class InstrutorViewSet(viewsets.ModelViewSet):
     queryset = Instrutor.objects.all()
     permission_classes = [IsAuthenticated]
-    pagination_class = CustomPagination
     
     def get_serializer_class(self):
         if self.action == 'create':

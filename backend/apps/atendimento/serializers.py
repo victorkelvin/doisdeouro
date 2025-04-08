@@ -10,13 +10,9 @@ class AulaCreateSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         """
-        validated_data contains all the serializer fields that passed validation.
-        We pop the 'instrutor' field separately because it's a ManyToMany relationship.
-        The remaining validated_data is used to create the Aula instance.
+        Create and return a new Aula instance, given the validated data.
         """
-        instrutores = validated_data.pop('instrutor', [])  # Get and remove instructors from data
-        aula = Aula.objects.create(**validated_data)  # Create aula with remaining fields
-        aula.instrutor.set(instrutores)  # Set the many-to-many relationship
+        aula = Aula.objects.create(**validated_data)
         return aula
 
 class AulaUpdateSerializer(serializers.ModelSerializer):
@@ -28,20 +24,10 @@ class AulaUpdateSerializer(serializers.ModelSerializer):
     
     def update(self, instance, validated_data):
         """
-        validated_data contains the new values that passed validation.
-        We handle the ManyToMany 'instrutor' field separately.
-        Other fields are updated directly on the instance.
+        Update and return an existing Aula instance, given the validated data.
         """
-        instrutores = validated_data.pop('instrutor', None)  # Get and remove instructors
-        
-        # Update regular fields
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
-        
-        # Update instructors if provided
-        if instrutores is not None:
-            instance.instrutor.set(instrutores)
-        
         instance.save()
         return instance
 

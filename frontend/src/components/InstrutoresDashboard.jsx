@@ -270,7 +270,7 @@ const InstrutoresDashboard = () => {
                 </div>
             )}
 
-            <SearchBar value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+            <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} placeholder='Buscar Instrutor' />
 
             {/* tabela de instrutores */}
             <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">

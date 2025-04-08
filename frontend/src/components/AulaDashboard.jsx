@@ -94,7 +94,7 @@ const AulaDashboard = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         try {
             const formData = new FormData();
             formData.append('data', data);
@@ -104,7 +104,7 @@ const AulaDashboard = () => {
             formData.append('observacao', observacao);
             formData.append('turma', turma);
             formData.append('instrutores', instrutores_aula);
-    
+
             const body = {
                 data,
                 alunos_presentes,
@@ -112,7 +112,7 @@ const AulaDashboard = () => {
                 horario_fim,
                 observacao,
                 turma,
-                instrutores : instrutores_aula
+                instrutores: instrutores_aula
             };
 
             if (editingId) {
@@ -120,7 +120,7 @@ const AulaDashboard = () => {
             } else {
                 await createAula(body);
             }
-    
+
             resetForm();
             const aulasData = await fetchAulas();
             setAulas(aulasData.results);
@@ -405,8 +405,6 @@ const AulaDashboard = () => {
                     <tbody className="bg-white divide-y divide-gray-200">
                         {aulas.map((aula) => {
                             // Find related objects
-                            const turmaObj = turmas.find(t => t.id === aula.turma);
-
                             return (
                                 <tr
                                     key={aula.id}
@@ -418,10 +416,10 @@ const AulaDashboard = () => {
                                         {formatDate(aula.data)}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {turmaObj ? turmaObj.nome : 'N/A'}
+                                        {aula.turma ? aula.turma : 'N/A'}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {getInstrutorNames(aula)}
+                                        {aula.instrutores ? aula.instrutores.join(', ') : 'N/A'}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
@@ -443,7 +441,7 @@ const AulaDashboard = () => {
                 </table>
             </div>
 
-            {selectedAula && (
+            {/*             {selectedAula && (
                 <SpanCard
                     ref={cardRef}
                     data={{
@@ -457,7 +455,7 @@ const AulaDashboard = () => {
                     position={cardPosition}
                     setCardPosition={setCardPosition}
                 />
-            )}
+            )} */}
         </div>
     );
 };

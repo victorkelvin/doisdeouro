@@ -1,14 +1,34 @@
 from rest_framework import serializers
 from apps.atendimento.models import Aula
+# from apps.academia.models import Aluno
+# from apps.contas.models import Instrutor
 
 class AulaCreateSerializer(serializers.ModelSerializer):
+    # alunos_presentes = serializers.PrimaryKeyRelatedField(
+    #     many=True,
+    #     queryset=Aluno.objects.all(),
+    #     required=False
+    # )
+    # instrutores = serializers.PrimaryKeyRelatedField(
+    #     many=True,
+    #     queryset=Instrutor.objects.all(),
+    #     required=False
+    # )
+
     class Meta:
         model = Aula
         fields = ['id', 'data', 'alunos_presentes', 'horario_inicio', 'horario_fim', 
                  'observacao', 'turma', 'instrutores']
     
     def create(self, validated_data):
+
+        alunos_presentes = validated_data.pop('alunos_presentes', [])
+        instrutores = validated_data.pop('instrutores', [])
+        
         aula = Aula.objects.create(**validated_data)
+        
+        aula.alunos_presentes.set(alunos_presentes)
+        aula.instrutores.set(instrutores)
         return aula
 
 
@@ -22,8 +42,15 @@ class AulaUpdateSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
 
         for attr, value in validated_data.items():
-            setattr(instance, attr, value)
+            if attr not in ['alunos_presentes', 'instrutores']:
+                setattr(instance, attr, value)
+
         instance.save()
+        if 'alunos_presentes' in validated_data:
+            instance.alunos_presentes.set(validated_data['alunos_presentes'])
+        
+        if 'instrutores' in validated_data:
+            instance.instrutores.set(validated_data['instrutores'])
         return instance
 
 class AulaListSerializer(serializers.ModelSerializer):

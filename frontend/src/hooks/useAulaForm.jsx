@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 const useAulaForm = () => {
     const [data, setData] = useState('');
-    const [aluno_presente, setAlunoPresente] = useState([]);
+    const [alunos_presentes, setAlunosPresentes] = useState([]);
     const [horario_inicio, setHorarioInicio] = useState('');
     const [horario_fim, setHorarioFim] = useState('');
     const [observacao, setObservacao] = useState('');
@@ -12,7 +12,7 @@ const useAulaForm = () => {
 
     const resetForm = () => {
         setData('');
-        setAlunoPresente([]);
+        setAlunosPresentes([]);
         setHorarioInicio('');
         setHorarioFim('');
         setObservacao('');
@@ -23,7 +23,7 @@ const useAulaForm = () => {
 
     return {
         data,
-        aluno_presente,
+        alunos_presentes,
         horario_inicio,
         horario_fim,
         observacao,
@@ -31,7 +31,7 @@ const useAulaForm = () => {
         instrutores_aula,
         editingId,
         setData,
-        setAlunoPresente,
+        setAlunosPresentes,
         setHorarioInicio,
         setHorarioFim,
         setObservacao,

@@ -23,7 +23,7 @@ const AulaDashboard = () => {
     // Modified form state to handle multiple selections
     const {
         data,
-        aluno_presente,
+        alunos_presentes,
         horario_inicio,
         horario_fim,
         observacao,
@@ -31,7 +31,7 @@ const AulaDashboard = () => {
         instrutores_aula,
         editingId,
         setData,
-        setAlunoPresente,
+        setAlunosPresentes,
         setHorarioInicio,
         setHorarioFim,
         setObservacao,
@@ -98,21 +98,21 @@ const AulaDashboard = () => {
         try {
             const formData = new FormData();
             formData.append('data', data);
-            formData.append('aluno_presente', aluno_presente);
+            formData.append('alunos_presentes', alunos_presentes);
             formData.append('horario_inicio', horario_inicio);
             formData.append('horario_fim', horario_fim);
             formData.append('observacao', observacao);
             formData.append('turma', turma);
-            formData.append('instrutor', instrutores_aula);
+            formData.append('instrutores', instrutores_aula);
     
             const body = {
                 data,
-                aluno_presente,
+                alunos_presentes,
                 horario_inicio,
                 horario_fim,
                 observacao,
                 turma,
-                instrutor : instrutores_aula
+                instrutores : instrutores_aula
             };
 
             if (editingId) {
@@ -131,7 +131,7 @@ const AulaDashboard = () => {
 
     const handleEdit = (aula) => {
         setData(aula.data);
-        setAlunoPresente(aula.aluno_presente || []);
+        setAlunosPresentes(aula.alunos_presentes || []);
         setHorarioInicio(aula.horario_inicio);
         setHorarioFim(aula.horario_fim);
         setObservacao(aula.observacao || '');
@@ -169,8 +169,8 @@ const AulaDashboard = () => {
 
     // Count alunos in an aula
     const countAlunos = (aula) => {
-        if (!aula.aluno_presente) return 0;
-        return aula.aluno_presente.length;
+        if (!aula.alunos_presentes) return 0;
+        return aula.alunos_presentes.length;
     };
 
     // Get instructor names for an aula
@@ -194,7 +194,7 @@ const AulaDashboard = () => {
             }
         }
 
-        setAlunoPresente(selectedValues);
+        setAlunosPresentes(selectedValues);
     };
 
     // Handle multiple selection for instrutores
@@ -258,7 +258,7 @@ const AulaDashboard = () => {
                                 </label>
                                 <select
                                     multiple
-                                    value={aluno_presente}
+                                    value={alunos_presentes}
                                     onChange={handleAlunosChange}
                                     required
                                     className="border rounded p-2 w-full h-32 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent"
@@ -270,7 +270,7 @@ const AulaDashboard = () => {
                                     ))}
                                 </select>
                                 <div className="text-xs text-gray-500 mt-1">
-                                    {aluno_presente.length} aluno(s) selecionado(s)
+                                    {alunos_presentes.length} aluno(s) selecionado(s)
                                 </div>
                             </div>
 
@@ -449,7 +449,7 @@ const AulaDashboard = () => {
                     data={{
                         ...selectedAula,
                         turmaNome: turmas.find(t => t.id === selectedAula.turma)?.nome,
-                        alunosCount: selectedAula.aluno_presente?.length || 0,
+                        alunosCount: selectedAula.alunos_presentes?.length || 0,
                         instrutoresNames: getInstrutorNames(selectedAula),
                         formattedDate: formatDate(selectedAula.data),
                         formattedHorario: `${formatTime(selectedAula.horario_inicio)} - ${formatTime(selectedAula.horario_fim)}`

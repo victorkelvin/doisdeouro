@@ -14,7 +14,7 @@ class Aula(models.Model):
     instrutores = models.ManyToManyField(Instrutor, verbose_name='Instrutores')  
 
     def __str__(self):
-        return f'{self.data} - {self.turma} - {self.aluno_presente.nome}'
+        return f'{self.data} - {self.turma} - {self.alunos_presentes.nome}'
     
     class Meta:
         verbose_name = 'Aula'

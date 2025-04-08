@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { sortData, renderSortIndicator } from '../utils/sorting';
+import { formatDate } from '../utils/utils';
 import useAulaForm from '../hooks/useAulaForm';
 import { fetchAulas, createAula, updateAula } from '../services/aulasApi';
 import { fetchTurmas } from '../services/turmasApi';
@@ -7,6 +8,9 @@ import { fetchAlunos } from '../services/alunosApi';
 import { fetchInstrutores } from '../services/instrutoresApi';
 import SearchBar from './SearchBar';
 import SpanCard from './SpanCard';
+import Select from 'react-select';
+import MultiSelect from './MultiSelect';
+
 
 const AulaDashboard = () => {
     const [aulas, setAulas] = useState([]);
@@ -18,6 +22,7 @@ const AulaDashboard = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [sortDirection, setSortDirection] = useState('asc');
     const [cardPosition, setCardPosition] = useState({ x: 0, y: 0 });
+
     const cardRef = useRef(null);
 
     // Modified form state to handle multiple selections
@@ -44,12 +49,11 @@ const AulaDashboard = () => {
     const loadData = async () => {
         const aulasData = await fetchAulas();
         setAulas(aulasData.results);
-        const turmasData = await fetchTurmas();
-        setTurmas(turmasData);
         const alunosData = await fetchAlunos();
         setAlunos(alunosData.results);
-        const instrutoresData = await fetchInstrutores();
-        setInstrutores(instrutoresData);
+
+        setTurmas(await fetchTurmas());
+        setInstrutores(await fetchInstrutores());
     };
 
     useEffect(() => {
@@ -96,23 +100,15 @@ const AulaDashboard = () => {
         e.preventDefault();
 
         try {
-            const formData = new FormData();
-            formData.append('data', data);
-            formData.append('alunos_presentes', alunos_presentes);
-            formData.append('horario_inicio', horario_inicio);
-            formData.append('horario_fim', horario_fim);
-            formData.append('observacao', observacao);
-            formData.append('turma', turma);
-            formData.append('instrutores', instrutores_aula);
 
             const body = {
                 data,
-                alunos_presentes,
+                alunos_presentes: alunos_presentes.map((aluno) => aluno.id),
                 horario_inicio,
                 horario_fim,
                 observacao,
-                turma,
-                instrutores: instrutores_aula
+                turma: turma.id,
+                instrutores: instrutores_aula.map((instrutor) => instrutor.id),
             };
 
             if (editingId) {
@@ -130,86 +126,32 @@ const AulaDashboard = () => {
     };
 
     const handleEdit = (aula) => {
-        setData(aula.data);
+        setData((aula.data));
         setAlunosPresentes(aula.alunos_presentes || []);
         setHorarioInicio(aula.horario_inicio);
         setHorarioFim(aula.horario_fim);
         setObservacao(aula.observacao || '');
         setTurma(aula.turma);
-        setInstrutoresAula(aula.instrutores_aula || []);
+        setInstrutoresAula(aula.instrutores || []);
         setEditingId(aula.id);
     };
 
-    // Format date for display
-    const formatDate = (dateString) => {
-        const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
-        return new Date(dateString).toLocaleDateString(undefined, options);
+    const formatAlunoOptions = (alunos) => {
+        return alunos.map((aluno) => ({
+            value: aluno.id,
+            label: `${aluno.nome} (${aluno.faixa} - ${aluno.turma_nome})`,
+            data: aluno,
+        }));
     };
 
-    // Format time for display
-    const formatTime = (timeString) => {
-        return timeString.substring(0, 5); // Get HH:MM part
+    const formatInstrutorOptions = (instrutores) => {
+        return instrutores.map((instrutor) => ({
+            value: instrutor.id,
+            label: `${instrutor.nome}`,
+            data: instrutor,
+        }));
     };
 
-    // Filter aulas by date
-    const filterByDate = (aulas, searchTerm) => {
-        if (!searchTerm) return aulas;
-
-        const normalizedSearchTerm = searchTerm.toLowerCase().trim();
-
-        return aulas.filter(aula => {
-            const aulaDate = formatDate(aula.data).toLowerCase();
-            return aulaDate.includes(normalizedSearchTerm);
-        });
-    };
-
-    // Filter and sort data - updated to filter by date
-    const filteredAulas = filterByDate(aulas, searchTerm);
-    // const sortedAulas = sortData(filteredAulas, sortDirection);
-
-    // Count alunos in an aula
-    const countAlunos = (aula) => {
-        if (!aula.alunos_presentes) return 0;
-        return aula.alunos_presentes.length;
-    };
-
-    // Get instructor names for an aula
-    const getInstrutorNames = (aula) => {
-        if (!aula.instrutores_aula || !aula.instrutores_aula.length) return 'N/A';
-
-        return aula.instrutores_aula.map(instId => {
-            const instrutor = instrutores.find(i => i.id === instId);
-            return instrutor ? instrutor.nome : '';
-        }).filter(Boolean).join(', ');
-    };
-
-    // Handle multiple selection for alunos
-    const handleAlunosChange = (e) => {
-        const options = e.target.options;
-        const selectedValues = [];
-
-        for (let i = 0; i < options.length; i++) {
-            if (options[i].selected) {
-                selectedValues.push(parseInt(options[i].value));
-            }
-        }
-
-        setAlunosPresentes(selectedValues);
-    };
-
-    // Handle multiple selection for instrutores
-    const handleInstrutoresChange = (e) => {
-        const options = e.target.options;
-        const selectedValues = [];
-
-        for (let i = 0; i < options.length; i++) {
-            if (options[i].selected) {
-                selectedValues.push(parseInt(options[i].value));
-            }
-        }
-
-        setInstrutoresAula(selectedValues);
-    };
 
     return (
         <div className="p-4 relative">
@@ -244,7 +186,7 @@ const AulaDashboard = () => {
                                 <label className="block text-gray-700 text-sm font-bold mb-2">Data</label>
                                 <input
                                     type="date"
-                                    value={data}
+                                    value={data ? data.split('T')[0] : ''}
                                     onChange={(e) => setData(e.target.value)}
                                     required
                                     className="border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent"
@@ -252,26 +194,60 @@ const AulaDashboard = () => {
                             </div>
 
                             <div>
-                                <label className="block text-gray-700 text-sm font-bold mb-2">
-                                    Alunos Presentes
-                                    <span className="text-xs text-gray-500 ml-1">(Ctrl+Click para selecionar múltiplos)</span>
-                                </label>
+                                <label className="block text-gray-700 text-sm font-bold mb-2">Turma</label>
                                 <select
-                                    multiple
-                                    value={alunos_presentes}
-                                    onChange={handleAlunosChange}
+                                    value={turma.id}
+                                    onChange={(e) => setTurma(e.target.value)}
                                     required
-                                    className="border rounded p-2 w-full h-32 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent"
+                                    className="border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent"
                                 >
-                                    {alunos.map((aluno) => (
-                                        <option key={aluno.id} value={aluno.id}>
-                                            {aluno.nome}
+                                    <option value="">Selecione a Turma</option>
+                                    {turmas.map((t) => (
+                                        <option key={t.id} value={t.id}>
+                                            {t.nome}
                                         </option>
                                     ))}
                                 </select>
-                                <div className="text-xs text-gray-500 mt-1">
-                                    {alunos_presentes.length} aluno(s) selecionado(s)
-                                </div>
+                            </div>
+
+                            <div>
+                                <MultiSelect
+                                    label="Instrutores"
+                                    options={formatInstrutorOptions(instrutores)}
+                                    value={instrutores_aula.map((instrutor) => ({
+                                        value: instrutor.id,
+                                        label: instrutor.nome,
+                                    }))}
+                                    onChange={(selectedOptions) =>
+                                        setInstrutoresAula(
+                                            selectedOptions.map((option) => ({
+                                                id: option.value,
+                                                nome: option.label,
+                                            }))
+                                        )
+                                    }
+                                    placeholder="Selecione os instrutores..."
+                                />
+                            </div>
+
+                            <div>
+                                <MultiSelect
+                                    label="Alunos Presentes"
+                                    options={formatAlunoOptions(alunos)}
+                                    value={alunos_presentes.map((aluno) => ({
+                                        value: aluno.id,
+                                        label: aluno.nome,
+                                    }))}
+                                    onChange={(selectedOptions) =>
+                                        setAlunosPresentes(
+                                            selectedOptions.map((option) => ({
+                                                id: option.value,
+                                                nome: option.label,
+                                            }))
+                                        )
+                                    }
+                                    placeholder="Selecione os alunos..."
+                                />
                             </div>
 
                             <div>
@@ -296,44 +272,9 @@ const AulaDashboard = () => {
                                 />
                             </div>
 
-                            <div>
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Turma</label>
-                                <select
-                                    value={turma}
-                                    onChange={(e) => setTurma(e.target.value)}
-                                    required
-                                    className="border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent"
-                                >
-                                    <option value="">Selecione a Turma</option>
-                                    {turmas.map((t) => (
-                                        <option key={t.id} value={t.id}>
-                                            {t.nome}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
 
-                            <div>
-                                <label className="block text-gray-700 text-sm font-bold mb-2">
-                                    Instrutores
-                                    <span className="text-xs text-gray-500 ml-1">(Ctrl+Click para selecionar múltiplos)</span>
-                                </label>
-                                <select
-                                    multiple
-                                    value={instrutores_aula}
-                                    onChange={handleInstrutoresChange}
-                                    className="border rounded p-2 w-full h-32 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent"
-                                >
-                                    {instrutores.map((inst) => (
-                                        <option key={inst.id} value={inst.id}>
-                                            {inst.nome}
-                                        </option>
-                                    ))}
-                                </select>
-                                <div className="text-xs text-gray-500 mt-1">
-                                    {instrutores_aula.length} instrutor(es) selecionado(s)
-                                </div>
-                            </div>
+
+
                         </div>
 
                         <div className="mt-4">
@@ -416,14 +357,14 @@ const AulaDashboard = () => {
                                         {formatDate(aula.data)}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {aula.turma ? aula.turma : 'N/A'}
+                                        {aula.turma ? aula.turma.nome : 'N/A'}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {aula.instrutores ? aula.instrutores.join(', ') : 'N/A'}
+                                        {aula.instrutores ? aula.instrutores.map((inst) => { return inst.nome + ' | ' }) : 'N/A'}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                                            {countAlunos(aula)}
+                                            {aula.alunos_presentes.length}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">

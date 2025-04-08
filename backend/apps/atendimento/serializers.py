@@ -59,9 +59,6 @@ class AulaUpdateSerializer(serializers.ModelSerializer):
 
 
 class AulaListSerializer(serializers.ModelSerializer):
-    alunos_presentes = serializers.SerializerMethodField()
-    turma = serializers.SerializerMethodField()
-    instrutores = serializers.SerializerMethodField()
 
     class Meta:
         model = Aula
@@ -77,16 +74,20 @@ class AulaListSerializer(serializers.ModelSerializer):
         ]
 
     def get_alunos_presentes(self, obj):
-        return [aluno.nome for aluno in obj.alunos_presentes.all()]
+        return [{'id': aluno.id, 'nome': aluno.nome} for aluno in obj.alunos_presentes.all()]
+
+
     def get_turma(self, obj):
-        return obj.turma.nome if obj.turma else None
+        if obj.turma:
+            return {"id": obj.turma.id, "nome": obj.turma.nome}
+        return None
+
     def get_instrutores(self, obj):
-        return [instrutor.nome for instrutor in obj.instrutores.all()]
+        return [{'id': instrutor.id, 'nome': instrutor.nome} for instrutor in obj.instrutores.all()]
+
     def to_representation(self, instance):
         ret = super().to_representation(instance)
         ret["alunos_presentes"] = self.get_alunos_presentes(instance)
         ret["turma"] = self.get_turma(instance)
         ret["instrutores"] = self.get_instrutores(instance)
         return ret
-    
-    

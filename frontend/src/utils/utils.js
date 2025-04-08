@@ -9,6 +9,7 @@ export function cn(...classes) {
 
 
 export const formatDate = (dateString) => {
-  const [year, month, day] = dateString.split('-');
+  const [year, month, daytime] = dateString.split('-');
+  const [day] = daytime.split('T');
   return `${day}/${month}/${year}`;
 };

@@ -49,8 +49,6 @@ const TurmasDashboard = () => {
         setDiasDaSemana(turma.dias_da_semana);
         setHorario(turma.horario);
         setEditingId(turma.id);
-        console.log('Editing turma:', diasDaSemana);
-
     };
 
     const resetForm = () => {

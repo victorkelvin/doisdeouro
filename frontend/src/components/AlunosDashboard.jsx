@@ -154,20 +154,6 @@ const AlunosDashboard = () => {
     };
 
     const filteredAlunos = filterData(alunos, searchTerm);
-
-
-    // Handle sorting
-    // const handleSort = (option) => {
-    //     if (sortOption === option) {
-    //         // If clicking the same column, toggle direction
-    //         setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    //     } else {
-    //         // New column, default to ascending
-    //         setSortOption(option);
-    //         setSortDirection('asc');
-    //     }
-    // };
-
     const sortedAlunos = sortData(filteredAlunos, sortDirection);
 
 

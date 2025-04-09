@@ -71,6 +71,8 @@ class InstrutorUpdateSerializer(serializers.ModelSerializer):
 
 class InstrutorListSerializer(serializers.ModelSerializer):
 
+    faixa = serializers.StringRelatedField(source="graduacao.faixa", read_only=True)
+
     class Meta:
         model = Instrutor
         fields = [
@@ -82,4 +84,7 @@ class InstrutorListSerializer(serializers.ModelSerializer):
             "contato",
             "foto",
             "is_active",
+            "faixa"
         ]
+
+

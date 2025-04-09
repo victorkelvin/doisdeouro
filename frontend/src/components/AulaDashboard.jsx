@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { sortData, renderSortIndicator } from '../utils/sorting';
+import React, { useEffect, useState } from 'react';
+import { sortData, renderSortIndicator, filterData } from '../utils/sorting';
 import { formatDate } from '../utils/utils';
 import useAulaForm from '../hooks/useAulaForm';
 import { fetchAulas, createAula, updateAula } from '../services/aulasApi';
@@ -7,25 +7,21 @@ import { fetchTurmas } from '../services/turmasApi';
 import { fetchAlunos } from '../services/alunosApi';
 import { fetchInstrutores } from '../services/instrutoresApi';
 import SearchBar from './SearchBar';
-import SpanCard from './SpanCard';
-import Select from 'react-select';
 import MultiSelect from './MultiSelect';
-
+import AlunoCardModal from './AlunoCardModal';
 
 const AulaDashboard = () => {
     const [aulas, setAulas] = useState([]);
     const [turmas, setTurmas] = useState([]);
     const [alunos, setAlunos] = useState([]);
     const [instrutores, setInstrutores] = useState([]);
-    const [selectedAula, setSelectedAula] = useState(null);
     const [isFormVisible, setIsFormVisible] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [sortDirection, setSortDirection] = useState('asc');
-    const [cardPosition, setCardPosition] = useState({ x: 0, y: 0 });
 
-    const cardRef = useRef(null);
+    const [isAlunoModalOpen, setIsAlunoModalOpen] = useState(false);
 
-    // Modified form state to handle multiple selections
+
     const {
         data,
         alunos_presentes,
@@ -60,47 +56,10 @@ const AulaDashboard = () => {
         loadData();
     }, []);
 
-    const handleMouseEnter = (aula, e) => {
-        setSelectedAula(aula);
-
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
-
-        let x = e.clientX + 10; // Offset from cursor
-        let y = e.clientY + 10;
-
-        setTimeout(() => {
-            if (cardRef.current) {
-                const cardWidth = cardRef.current.offsetWidth;
-                const cardHeight = cardRef.current.offsetHeight;
-
-                // Adjust horizontal position if needed
-                if (x + cardWidth > viewportWidth) {
-                    x = e.clientX - cardWidth - 10;
-                }
-
-                // Adjust vertical position if needed
-                if (y + cardHeight > viewportHeight) {
-                    y = e.clientY - cardHeight - 10;
-                }
-
-                setCardPosition({ x, y });
-            }
-        }, 0);
-
-        setCardPosition({ x, y });
-    };
-
-    const handleMouseLeave = () => {
-        setSelectedAula(null);
-    };
-
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-
             const body = {
                 data,
                 alunos_presentes: alunos_presentes.map((aluno) => aluno.id),
@@ -152,6 +111,21 @@ const AulaDashboard = () => {
         }));
     };
 
+    const handleSelectAluno = (aluno) => {
+        const isAlreadySelected = alunos_presentes.some(a => a.id === aluno.id);
+
+        if (isAlreadySelected) {
+            setAlunosPresentes(alunos_presentes.filter(a => a.id !== aluno.id));
+        } else {
+            setAlunosPresentes([...alunos_presentes, {
+                id: aluno.id,
+                nome: aluno.nome
+            }]);
+        }
+    };
+
+    const filteredAulas = filterData(aulas, searchTerm, 'data');
+    const sortedAulas = sortData(filteredAulas, sortDirection, 'data');
 
     return (
         <div className="p-4 relative">
@@ -196,8 +170,11 @@ const AulaDashboard = () => {
                             <div>
                                 <label className="block text-gray-700 text-sm font-bold mb-2">Turma</label>
                                 <select
-                                    value={turma.id}
-                                    onChange={(e) => setTurma(e.target.value)}
+                                    value={turma?.id || ''}
+                                    onChange={(e) => {
+                                        const selectedTurma = turmas.find(t => t.id.toString() === e.target.value);
+                                        setTurma(selectedTurma || {});
+                                    }}
                                     required
                                     className="border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent"
                                 >
@@ -247,6 +224,8 @@ const AulaDashboard = () => {
                                         )
                                     }
                                     placeholder="Selecione os alunos..."
+                                    showCardView={true}
+                                    onCardViewClick={() => setIsAlunoModalOpen(true)}
                                 />
                             </div>
 
@@ -271,10 +250,6 @@ const AulaDashboard = () => {
                                     className="border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent"
                                 />
                             </div>
-
-
-
-
                         </div>
 
                         <div className="mt-4">
@@ -344,13 +319,10 @@ const AulaDashboard = () => {
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {aulas.map((aula) => {
-                            // Find related objects
+                        {sortedAulas.map((aula) => {
                             return (
                                 <tr
                                     key={aula.id}
-                                    onMouseEnter={(e) => handleMouseEnter(aula, e)}
-                                    onMouseLeave={handleMouseLeave}
                                     className="hover:bg-gray-50"
                                 >
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -360,7 +332,7 @@ const AulaDashboard = () => {
                                         {aula.turma ? aula.turma.nome : 'N/A'}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {aula.instrutores ? aula.instrutores.map((inst) => { return inst.nome + ' | ' }) : 'N/A'}
+                                        {aula.instrutores ? aula.instrutores.map((inst) => inst.nome).join(' | ') : 'N/A'}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
@@ -382,21 +354,14 @@ const AulaDashboard = () => {
                 </table>
             </div>
 
-            {/*             {selectedAula && (
-                <SpanCard
-                    ref={cardRef}
-                    data={{
-                        ...selectedAula,
-                        turmaNome: turmas.find(t => t.id === selectedAula.turma)?.nome,
-                        alunosCount: selectedAula.alunos_presentes?.length || 0,
-                        instrutoresNames: getInstrutorNames(selectedAula),
-                        formattedDate: formatDate(selectedAula.data),
-                        formattedHorario: `${formatTime(selectedAula.horario_inicio)} - ${formatTime(selectedAula.horario_fim)}`
-                    }}
-                    position={cardPosition}
-                    setCardPosition={setCardPosition}
-                />
-            )} */}
+            {/* Aluno Card Modal */}
+            <AlunoCardModal
+                isOpen={isAlunoModalOpen}
+                onClose={() => setIsAlunoModalOpen(false)}
+                alunos={alunos}
+                selectedAlunos={alunos_presentes}
+                onSelectAluno={handleSelectAluno}
+            />
         </div>
     );
 };

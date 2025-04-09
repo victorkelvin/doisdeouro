@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './pages/Login';
 import Main from './pages/Main';
-// Import your other components
 
 // Protected route component
 const ProtectedRoute = ({ children }) => {
@@ -23,12 +22,12 @@ const App = () => {
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/main" element={
+          <Route path="/main/*" element={
             <ProtectedRoute>
               <Main />
             </ProtectedRoute>
           } />
-          {/* Your other routes */}
+          <Route path="/" element={<Navigate to="/main/alunos" />} />
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </AuthProvider>

@@ -7,8 +7,8 @@ function Footer({
   whatsappUrl = "https://wa.me/5500000000000",
 }) {
   return (
-    <footer className="border-t bg-muted/40 py-2">
-      <div className="container flex flex-col items-center justify-between gap-2 text-xs text-muted-foreground md:flex-row">
+    <footer className="border-t-2 bg-gray-300 py-2">
+      <div className="container flex flex-col items-center justify-between gap-2 text-xs text-black md:flex-row">
         <p>
           © {new Date().getFullYear()} Academia Dois de Ouro. <br /> Desenvolvido por{" "}
           <span className="font-medium">{developerName}</span>

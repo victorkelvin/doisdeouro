@@ -5,7 +5,7 @@ function LogoAcademia({ className, showText = true }) {
 
   return (
     <div className={cn("flex items-center gap-2", className)}>
-      <div className="relative h-10 w-10 overflow-hidden">
+      <div className="relative h-12 w-12 overflow-hidden">
           <img
 
           src={logoImage || "/placeholder.svg"}

@@ -146,8 +146,7 @@ const InstrutoresDashboard = () => {
         formData.append('is_active', newStatus);
 
         await updateInstrutor(instrutor.id, formData);
-        const instrutoresData = await fetchInstrutores();
-        setInstrutores(instrutoresData);
+        setInstrutores(await fetchInstrutores());
     };
 
     const filteredInstrutores = filterData(instrutores, searchTerm);

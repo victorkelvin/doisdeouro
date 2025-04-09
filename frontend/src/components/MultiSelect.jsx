@@ -12,7 +12,6 @@ const CustomOption = (props) => {
             style={{
                 padding: '10px',
                 cursor: 'pointer',
-                // backgroundColor: innerProps.isFocused ? '#f0f0f0' : 'white',
             }}
         >
             {data.label}

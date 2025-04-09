@@ -1,44 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 
 import TopBar from '../components/TopBar';
-import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer';
 
 import AlunosDashboard from '../components/AlunosDashboard';
 import TurmasDashboard from '../components/TurmasDashboard';
 import InstrutoresDashboard from '../components/InstrutoresDashboard';
 import AulaDashboard from '../components/AulaDashboard';
-import GraduacoesDashboard from '../components/GraduacoesDashboard';
+import RelatoriosDashboard from '../components/RelatoriosDashboard';
 
-const Main = ({ onLogout }) => {
-    const user_id = useState(localStorage.getItem('user_id'))[0];
-    const [selectedDashboard, setSelectedDashboard] = useState(''); // Default dashboard
+const Main = () => {
+    const user_id = localStorage.getItem('user_id');
+    const location = useLocation();
+    const [selectedDashboard, setSelectedDashboard] = useState('alunos');
 
-
-    const renderDashboard = () => {
-        switch (selectedDashboard) {
-            case 'alunos':
-                return <AlunosDashboard />;
-            case 'turmas':
-                return <TurmasDashboard />;
-            case 'instrutores':
-                return <InstrutoresDashboard />;
-            case 'aulas':
-                return <AulaDashboard />;
-            case 'graduacoes':
-                return <GraduacoesDashboard />;
-            default:
-                return <AlunosDashboard />;
+    // Update selected dashboard based on current path
+    useEffect(() => {
+        const pathSegments = location.pathname.split('/');
+        const currentDashboard = pathSegments[pathSegments.length - 1];
+        if (currentDashboard && ['alunos', 'turmas', 'instrutores', 'aulas', 'relatorios'].includes(currentDashboard)) {
+            setSelectedDashboard(currentDashboard);
         }
-    };
+    }, [location.pathname]);
 
     return (
         <div className="flex h-screen overflow-hidden">
-            <Sidebar selectedDashboard={selectedDashboard} setSelectedDashboard={setSelectedDashboard} /> {/* Pass function to Sidebar */}
             <div className="flex flex-1 flex-col">
-                <TopBar onLogout={onLogout} userId={user_id} />
+                <TopBar 
+                    userId={user_id} 
+                    selectedDashboard={selectedDashboard} 
+                    setSelectedDashboard={setSelectedDashboard}
+                    showText={true} 
+                />
                 <div className="flex-1 overflow-auto">
-                    {renderDashboard()} {/* Render the selected dashboard */}
+                    <Routes>
+                        <Route path="alunos" element={<AlunosDashboard />} />
+                        <Route path="turmas" element={<TurmasDashboard />} />
+                        <Route path="instrutores" element={<InstrutoresDashboard />} />
+                        <Route path="aulas" element={<AulaDashboard />} />
+                        <Route path="relatorios" element={<RelatoriosDashboard />} />
+                        <Route path="/" element={<Navigate to="alunos" replace />} />
+                        <Route path="*" element={<Navigate to="alunos" replace />} />
+                    </Routes>
                 </div>
                 <Footer
                     developerName="Victor Kelvin"

@@ -3,14 +3,11 @@ import ReactDOM from 'react-dom/client';
 import './styles/index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { SidebarProvider } from './contexts/SidebarContext'; // Import SidebarProvider
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-      <SidebarProvider> 
           <App />
-      </SidebarProvider>
   </React.StrictMode>
 );
 

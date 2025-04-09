@@ -120,13 +120,12 @@ const AlunosDashboard = () => {
             setAlunos(alunosData.results);
         } catch (error) {
             console.error('Error submitting form:', error);
-            // Handle error appropriately (show message to user, etc.)
         }
     };
 
     const handleEdit = (aluno) => {
         setNome(aluno.nome);
-        setAtivo(aluno.ativo === true || aluno.ativo === "true"); // Convert to boolean
+        setAtivo(aluno.ativo === true || aluno.ativo === "true"); 
         setDataNascimento(aluno.data_nascimento);
         setContato(aluno.contato || '');
         setEmail(aluno.email || '');
@@ -136,7 +135,6 @@ const AlunosDashboard = () => {
         setFotoPreview(aluno.foto);
     };
 
-    // Function to toggle active status directly from the table
     const toggleAtivoStatus = async (aluno) => {
         const newStatus = !(aluno.ativo === true || aluno.ativo === "true");
         const formData = new FormData();
@@ -388,36 +386,7 @@ const AlunosDashboard = () => {
                 selectedAluno && (
                     <SpanCard data={selectedAluno} position={cardPosition} setCardPosition={setCardPosition} />
                     
-/*                     <div
-                        ref={cardRef}
-                        className="fixed bg-white rounded-lg border p-4 shadow-lg max-w-xs z-50"
-                        style={{
-                            left: `${cardPosition.x}px`,
-                            top: `${cardPosition.y}px`
-                        }}
-                    >
-                        <div className="flex flex-col items-center">
-                            <img
-                                src={selectedAluno.foto}
-                                alt={selectedAluno.nome}
-                                className="w-32 h-32 object-cover rounded-lg mb-2 border border-gray-200"
-                            />
-                            <h2 className='font-bold text-lg text-gray-900'>{selectedAluno.nome}</h2>
-                            <div className="w-full mt-2">
-                                <p className="text-sm"><span className="font-semibold">Graduação:</span> {graduacoes.find(grad => grad.id === selectedAluno.graduacao)?.faixa || 'N/A'}</p>
-                                <p className="text-sm"><span className="font-semibold">Status:</span>
-                                    <span className={`ml-1 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${selectedAluno.ativo === true || selectedAluno.ativo === "true"
-                                        ? 'bg-green-100 text-green-800'
-                                        : 'bg-red-100 text-red-800'
-                                        }`}>
-                                        {selectedAluno.ativo === true || selectedAluno.ativo === "true" ? 'Ativo' : 'Inativo'}
-                                    </span>
-                                </p>
-                                <p className="text-sm"><span className="font-semibold">Data de Nascimento:</span> {selectedAluno.data_nascimento ? formatDate(selectedAluno.data_nascimento) : 'N/A'}</p>
-                                <p className="text-sm"><span className="font-semibold">Contato:</span> {selectedAluno.contato || 'N/A'}</p>
-                            </div>
-                        </div>
-                    </div> */
+
                 )
             }
         </div >

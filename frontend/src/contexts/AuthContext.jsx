@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const AuthContext = createContext(null);
 
@@ -8,6 +8,7 @@ export const AuthProvider = ({ children }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [userId, setUserId] = useState(null);
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         // Check if user is authenticated on initial load
@@ -15,26 +16,40 @@ export const AuthProvider = ({ children }) => {
             const token = localStorage.getItem('token');
             const expiry = localStorage.getItem('tokenExpiry');
             const storedUserId = localStorage.getItem('user_id');
-            
+
             if (token && expiry && new Date().getTime() < parseInt(expiry)) {
                 setIsAuthenticated(true);
                 setUserId(storedUserId);
+
+                // Only navigate if we're not already on a main route and not logging in
+                if (!location.pathname.includes('/main') && location.pathname !== '/login') {
+                    navigate('/main/alunos');
+                }
             } else if (localStorage.getItem('refreshToken')) {
                 // If access token is expired but we have a refresh token,
                 // we'll try to refresh in the API call
-                setIsAuthenticated(true); 
+                setIsAuthenticated(true);
                 setUserId(storedUserId);
+
+                // Only navigate if we're not already on a main route and not logging in
+                if (!location.pathname.includes('/main') && location.pathname !== '/login') {
+                    navigate('/main/alunos');
+                }
             } else {
                 setIsAuthenticated(false);
                 setUserId(null);
+
+                // Only navigate to login if we're not already there and trying to access a protected route
+                if (location.pathname !== '/login' && location.pathname.includes('/main')) {
+                    navigate('/login');
+                }
             }
-            
-            navigate('/main', { state: { userId: storedUserId } });
+
             setIsLoading(false);
         };
-        
+
         checkAuth();
-    }, [navigate]);
+    }, [navigate, location.pathname]);
 
     const login = async (username, password) => {
         setIsLoading(true);
@@ -53,18 +68,18 @@ export const AuthProvider = ({ children }) => {
             }
 
             const data = await response.json();
-            
+
             localStorage.setItem('token', data.access);
             localStorage.setItem('refreshToken', data.refresh);
-            
+
             const expiryTime = new Date().getTime() + 15 * 60 * 1000; // 15 minutes
             localStorage.setItem('tokenExpiry', expiryTime);
-            
+
             localStorage.setItem('user_id', username);
-            
+
             setIsAuthenticated(true);
             setUserId(username);
-            navigate('/main', { state: { userId: username } });
+            navigate('/main/alunos');
             return { success: true };
         } catch (error) {
             console.error('Login error:', error);
@@ -82,13 +97,13 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ 
-            isAuthenticated, 
-            isLoading, 
-            userId, 
-            login, 
+        <AuthContext.Provider value={{
+            isAuthenticated,
+            isLoading,
+            userId,
+            login,
             logout,
-            setIsAuthenticated 
+            setIsAuthenticated
         }}>
             {children}
         </AuthContext.Provider>

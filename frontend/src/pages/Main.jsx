@@ -31,7 +31,6 @@ const Main = () => {
                     userId={user_id} 
                     selectedDashboard={selectedDashboard} 
                     setSelectedDashboard={setSelectedDashboard}
-                    showText={true} 
                 />
                 <div className="flex-1 overflow-auto">
                     <Routes>

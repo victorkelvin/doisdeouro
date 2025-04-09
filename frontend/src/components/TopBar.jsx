@@ -76,10 +76,7 @@ function TopBar({ userId, selectedDashboard, setSelectedDashboard, showText = tr
             }
           >
             <item.icon className="h-5 w-5" />
-            { showText && (
               <span className="hidden lg:inline-block">{item.title}</span>
-            )}
-            {/* Mobile view icon only */}
           </NavLink>
         ))}
       </nav>
@@ -94,9 +91,7 @@ function TopBar({ userId, selectedDashboard, setSelectedDashboard, showText = tr
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
               {userId && userId.substring(0, 2).toUpperCase()}
             </div>
-            {showText && (
               <span className="hidden text-sm font-medium lg:inline-block">{userId}</span>
-            )}
 
           </button>
 

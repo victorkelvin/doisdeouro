@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
 
                 // Only navigate if we're not already on a main route and not logging in
                 if (!location.pathname.includes('/main') && location.pathname !== '/login') {
-                    navigate('/main/alunos');
+                    navigate('/main/aulas');
                 }
             } else if (localStorage.getItem('refreshToken')) {
                 // If access token is expired but we have a refresh token,
@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
 
                 // Only navigate if we're not already on a main route and not logging in
                 if (!location.pathname.includes('/main') && location.pathname !== '/login') {
-                    navigate('/main/alunos');
+                    navigate('/main/aulas');
                 }
             } else {
                 setIsAuthenticated(false);
@@ -79,7 +79,7 @@ export const AuthProvider = ({ children }) => {
 
             setIsAuthenticated(true);
             setUserId(username);
-            navigate('/main/alunos');
+            navigate('/main/aulas');
             return { success: true };
         } catch (error) {
             console.error('Login error:', error);

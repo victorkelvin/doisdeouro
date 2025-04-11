@@ -27,7 +27,7 @@ const App = () => {
               <Main />
             </ProtectedRoute>
           } />
-          <Route path="/" element={<Navigate to="/main/alunos" />} />
+          <Route path="/" element={<Navigate to="/main/aulas" />} />
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </AuthProvider>

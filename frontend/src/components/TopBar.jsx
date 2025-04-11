@@ -12,6 +12,11 @@ function TopBar({ userId, selectedDashboard, setSelectedDashboard, showText = tr
 
   const dashboards = [
     {
+      title: "Aulas",
+      icon: ClipboardList,
+      href: "/main/aulas",
+    },
+    {
       title: "Alunos",
       icon: Users,
       href: "/main/alunos",
@@ -26,16 +31,12 @@ function TopBar({ userId, selectedDashboard, setSelectedDashboard, showText = tr
       icon: UserCog,
       href: "/main/instrutores",
     },
-    {
-      title: "Aulas",
-      icon: ClipboardList,
-      href: "/main/aulas",
-    },
-    {
-      title: "Relatórios",
-      icon: BookOpenIcon,
-      href: "/main/relatorios",
-    },
+
+    // {
+    //   title: "Relatórios",
+    //   icon: BookOpenIcon,
+    //   href: "/main/relatorios",
+    // },
   ];
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);

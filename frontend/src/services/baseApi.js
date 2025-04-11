@@ -11,7 +11,7 @@ const getRefreshToken = () => {
 const isTokenExpired = () => {
     const expiry = localStorage.getItem('tokenExpiry');
     if (!expiry) return true;
-    
+
     // Add a buffer of 30 seconds to prevent edge cases
     return new Date().getTime() > (parseInt(expiry) - 30000);
 };
@@ -38,11 +38,11 @@ const refreshAccessToken = async () => {
 
         const data = await response.json();
         localStorage.setItem('token', data.access);
-        
+
         // Update expiry time (15 minutes from now)
         const newExpiryTime = new Date().getTime() + 15 * 60 * 1000;
         localStorage.setItem('tokenExpiry', newExpiryTime);
-        
+
         return data.access;
     } catch (error) {
         console.error('Error refreshing token:', error);
@@ -57,10 +57,12 @@ const logout = () => {
 };
 
 const handleResponse = async (response, retryCallback) => {
+
+    console.log(response.blob)
     if (!response.ok) {
         try {
             const errorData = await response.json();
-            
+
             // If token is invalid and we have a refresh token, try to refresh and retry the request
             if (errorData.code === 'token_not_valid' && getRefreshToken()) {
                 const newToken = await refreshAccessToken();
@@ -68,13 +70,13 @@ const handleResponse = async (response, retryCallback) => {
                     return retryCallback(newToken);
                 }
             }
-            
+
             // If we get here, either refresh failed or another error occurred
             if (errorData.code === 'token_not_valid') {
                 window.alert('Sessão expirada!');
                 logout();
             }
-            
+
             console.error('Error:', errorData);
             return errorData;
         } catch (error) {
@@ -90,7 +92,7 @@ const apiRequest = async (endpoint, method, body = null) => {
     if (isTokenExpired() && getRefreshToken()) {
         await refreshAccessToken();
     }
-    
+
     const makeRequest = async (token) => {
         const options = {
             method,
@@ -100,20 +102,21 @@ const apiRequest = async (endpoint, method, body = null) => {
             },
             body: body ? JSON.stringify(body) : null,
         };
-        
+
         const response = await fetch(`${BASE_URL}${endpoint}`, options);
         return handleResponse(response, newToken => makeRequest(newToken));
     };
-    
-    return makeRequest();
+
+    return makeRequest( null );
 };
+
 
 const apiFormDataRequest = async (endpoint, method, formData) => {
     // Check if token is expired before making the request
     if (isTokenExpired() && getRefreshToken()) {
         await refreshAccessToken();
     }
-    
+
     const makeRequest = async (token) => {
         const options = {
             method,
@@ -122,12 +125,35 @@ const apiFormDataRequest = async (endpoint, method, formData) => {
             },
             body: formData,
         };
-        
+
         const response = await fetch(`${BASE_URL}${endpoint}`, options);
         return handleResponse(response, newToken => makeRequest(newToken));
     };
-    
+
     return makeRequest();
 };
 
-export { apiRequest, apiFormDataRequest, logout };
+const apiBlobHandler = async (endpoint, body) => {
+    // Check if token is expired before making the request
+    if (isTokenExpired() && getRefreshToken()) {
+        await refreshAccessToken();
+    }
+
+    const makeRequest = async () => {
+        const options = {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${ getToken()}`,
+              'Content-Type': 'application/json',
+            },
+            body: body ? JSON.stringify(body) : null,
+        };
+
+        const response = await fetch(`${BASE_URL}${endpoint}`, options);
+        return response;
+    };
+
+    return makeRequest();
+}
+
+export { apiRequest, apiFormDataRequest, logout, apiBlobHandler };

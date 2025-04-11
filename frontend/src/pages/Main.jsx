@@ -7,13 +7,13 @@ import Footer from '../components/Footer';
 import AlunosDashboard from '../components/AlunosDashboard';
 import TurmasDashboard from '../components/TurmasDashboard';
 import InstrutoresDashboard from '../components/InstrutoresDashboard';
-import AulaDashboard from '../components/AulaDashboard';
+import AulasDashboard from '../components/AulasDashboard';
 import RelatoriosDashboard from '../components/RelatoriosDashboard';
 
 const Main = () => {
     const user_id = localStorage.getItem('user_id');
     const location = useLocation();
-    const [selectedDashboard, setSelectedDashboard] = useState('alunos');
+    const [selectedDashboard, setSelectedDashboard] = useState('aulas');
 
     // Update selected dashboard based on current path
     useEffect(() => {
@@ -37,10 +37,10 @@ const Main = () => {
                         <Route path="alunos" element={<AlunosDashboard />} />
                         <Route path="turmas" element={<TurmasDashboard />} />
                         <Route path="instrutores" element={<InstrutoresDashboard />} />
-                        <Route path="aulas" element={<AulaDashboard />} />
+                        <Route path="aulas" element={<AulasDashboard />} />
                         <Route path="relatorios" element={<RelatoriosDashboard />} />
-                        <Route path="/" element={<Navigate to="alunos" replace />} />
-                        <Route path="*" element={<Navigate to="alunos" replace />} />
+                        <Route path="/" element={<Navigate to="aulas" replace />} />
+                        <Route path="*" element={<Navigate to="aulas" replace />} />
                     </Routes>
                 </div>
                 <Footer

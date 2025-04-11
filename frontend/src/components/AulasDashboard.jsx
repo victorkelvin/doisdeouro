@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { sortData, renderSortIndicator, filterData } from '../utils/sorting';
 import { formatDate } from '../utils/utils';
 import useAulaForm from '../hooks/useAulaForm';
-import { fetchAulas, createAula, updateAula } from '../services/aulasApi';
+import { fetchAulas, createAula, updateAula, exportAulaToXLS } from '../services/aulasApi';
 import { fetchTurmas } from '../services/turmasApi';
 import { fetchAlunos } from '../services/alunosApi';
 import { fetchInstrutores } from '../services/instrutoresApi';
@@ -10,7 +10,7 @@ import SearchBar from './SearchBar';
 import MultiSelect from './MultiSelect';
 import AlunoCardModal from './AlunoCardModal';
 
-const AulaDashboard = () => {
+const AulasDashboard = () => {
     const [aulas, setAulas] = useState([]);
     const [turmas, setTurmas] = useState([]);
     const [alunos, setAlunos] = useState([]);
@@ -126,6 +126,29 @@ const AulaDashboard = () => {
 
     const filteredAulas = filterData(aulas, searchTerm, 'data');
     const sortedAulas = sortData(filteredAulas, sortDirection, 'data');
+
+
+    const handleExportarXLS = async () => {
+    
+        try {
+          // Prepare the data for export
+          const aulaData = {
+            data,
+            horario_inicio,
+            horario_fim,
+            observacao,
+            turma: turma?.id,
+            turma_nome: turma?.nome,
+            instrutores: instrutores_aula.map(instrutor => instrutor.id),
+            alunos_presentes: alunos_presentes.map(aluno => aluno.id)
+          };
+          
+          await exportAulaToXLS(aulaData);
+        } catch (error) {
+          console.error('Error generating XLS report:', error);
+          alert('Erro ao gerar relatório XLS. Por favor, tente novamente.');
+        }
+      };
 
     return (
         <div className="p-4 relative">
@@ -270,6 +293,13 @@ const AulaDashboard = () => {
                                 {editingId ? 'Atualizar' : 'Registrar'}
                             </button>
                             <button
+                                onClick={handleExportarXLS}
+
+                                className="bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 px-4 rounded shadow-md transition-all duration-200"
+                            >
+                                Gerar Relatório .xls
+                            </button>
+                            <button
                                 type="button"
                                 onClick={resetForm}
                                 className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded shadow-md transition-all duration-200"
@@ -366,4 +396,4 @@ const AulaDashboard = () => {
     );
 };
 
-export default AulaDashboard;
+export default AulasDashboard;

@@ -60,7 +60,7 @@ export const exportAulaToXLS = async (aulaData) => {
     try {
       const url = `${aulasEndpoint}export-xls/`;
       
-      const response = await apiBlobHandler(url, aulaData);
+      const blob = await apiBlobHandler(url, aulaData);
       
       
       if (!response.ok) {
@@ -69,7 +69,6 @@ export const exportAulaToXLS = async (aulaData) => {
       }
       
       // For binary files, use blob() instead of json()
-      const blob = await response.blob();
       const date = new Date(aulaData.data);
       const formattedDate = `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getFullYear()}`;
       

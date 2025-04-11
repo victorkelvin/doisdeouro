@@ -150,7 +150,7 @@ const apiBlobHandler = async (endpoint, body) => {
         };
 
         const response = await fetch(`${BASE_URL}${endpoint}`, options);
-        return response;
+        return response.blob(); // Return the blob directly
     };
 
     return makeRequest();

@@ -128,19 +128,19 @@ const AulasDashboard = () => {
     const sortedAulas = sortData(filteredAulas, sortDirection, 'data');
 
 
-    const handleExportarXLS = async () => {
+    const handleExportarXLS = async (aula) => {
+        // handleEdit(aula);
 
         try {
-            // Prepare the data for export
             const aulaData = {
-                data,
-                horario_inicio,
-                horario_fim,
-                observacao,
-                turma: turma?.id,
-                turma_nome: turma?.nome,
-                instrutores: instrutores_aula.map(instrutor => instrutor.id),
-                alunos_presentes: alunos_presentes.map(aluno => aluno.id)
+                data : aula.data,
+                horario_inicio : aula.horario_inicio,
+                horario_fim : aula.horario_fim,
+                observacao : aula.observacao,
+                turma: aula.turma.id,
+                turma_nome: aula.turma.nome,
+                instrutores: aula.instrutores.map(instrutor => instrutor.id),
+                alunos_presentes: aula.alunos_presentes.map(aluno => aluno.id)
             };
 
             await exportAulaToXLS(aulaData);
@@ -293,16 +293,6 @@ const AulasDashboard = () => {
                                 {editingId ? 'Atualizar' : 'Registrar'}
                             </button>
 
-                            {editingId && (
-                                <button
-                                    onClick={handleExportarXLS}
-                                    className="bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 px-4 rounded shadow-md transition-all duration-200"
-                                >
-                                    Gerar Relatório .xls
-                                </button>
-
-                            )
-                            }
 
                             <button
                                 type="button"
@@ -383,7 +373,7 @@ const AulasDashboard = () => {
                                         </button>
                                         <br></br>
                                         <button
-                                            onClick={() =>  console.log(aula)}   
+                                            onClick={() =>  handleExportarXLS(aula)}   
                                             className="bg-teal-500 hover:bg-teal-600 text-white rounded px-3 py-1 transition-colors duration-200 w-20 m-1"
                                         >
                                             Bixar .xls

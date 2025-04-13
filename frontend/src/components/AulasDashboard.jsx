@@ -130,7 +130,7 @@ const AulasDashboard = () => {
 
     const handleExportarXLS = async (aula) => {
         // handleEdit(aula);
-
+        console.log(aula)
         try {
             const aulaData = {
                 data : aula.data,
@@ -376,7 +376,7 @@ const AulasDashboard = () => {
                                             onClick={() =>  handleExportarXLS(aula)}   
                                             className="bg-teal-500 hover:bg-teal-600 text-white rounded px-3 py-1 transition-colors duration-200 w-20 m-1"
                                         >
-                                            Bixar .xls
+                                            Baixar .xls
                                         </button>
                                     </td>
                                 </tr>

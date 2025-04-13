@@ -41,7 +41,7 @@ export const exportAulaToXLS = async (aulaData) => {
       
       const link = document.createElement('a');
       link.href = window.URL.createObjectURL(blob);
-      link.download = `relatoriodeaula-${formattedDate}.xls`;
+      link.download = `relatoriodeaula-${aulaData.turma_nome} -${formattedDate}.xls`;
       link.click();
       
       return true;

@@ -6,7 +6,7 @@ from rest_framework.pagination import PageNumberPagination
 from .models import Aula
 from .serializers import AulaCreateSerializer, AulaUpdateSerializer, AulaListSerializer
 
-#imports to generate xls
+
 import pandas as pd
 from django.http import HttpResponse
 from rest_framework.decorators import action
@@ -45,7 +45,7 @@ class AulaViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'], url_path='export-xls')
     def export_xls(self, request):
         try:
-            # Get data from the request
+            
             data = request.data
             data_aula = data.get('data')
             horario_inicio = data.get('horario_inicio')
@@ -54,7 +54,7 @@ class AulaViewSet(viewsets.ModelViewSet):
             instrutores_ids = data.get('instrutores', [])
             alunos_ids = data.get('alunos_presentes', [])
 
-            # Fetch related objects
+            
             from django.apps import apps
             Turma = apps.get_model('academia', 'Turma') 
             Instrutor = apps.get_model('contas', 'Instrutor')
@@ -65,46 +65,34 @@ class AulaViewSet(viewsets.ModelViewSet):
             instrutores = Instrutor.objects.filter(id__in=instrutores_ids)
             alunos = Aluno.objects.filter(id__in=alunos_ids)
 
-            # Format the date for display
             date_obj = datetime.strptime(data_aula.split('T')[0], '%Y-%m-%d')
             formatted_date = date_obj.strftime('%d/%m/%Y')
 
-            # Create data for Excel
             excel_data = []
 
-            # Add header information
-            excel_data.append(['Relatório de Aula'])
-            excel_data.append(['Data', formatted_date])
-            excel_data.append(['Horário', f'{horario_inicio} - {horario_fim}'])
-            excel_data.append(['Turma', turma.nome if turma else 'N/A'])
+            max_length = max(len(instrutores), len(alunos), 1)
+            instrutores_names = [instrutor.nome for instrutor in instrutores] + [''] * (max_length - len(instrutores))
+            alunos_names = [aluno.nome for aluno in alunos] + [''] * (max_length - len(alunos))
 
-            excel_data.append([])  # Empty row as separator
+            for i in range(max_length):
+                excel_data.append({
+                    'Data': formatted_date if i == 0 else '',
+                    'Horário': f'{horario_inicio} - {horario_fim}' if i == 0 else '',
+                    'Turma': turma.nome if turma and i == 0 else '',
+                    'Instrutores': instrutores_names[i],
+                    'Alunos Presentes': alunos_names[i],
+                })
 
-            # Add instructors
-            excel_data.append(['Instrutores'])
-            for instrutor in instrutores:
-                excel_data.append([instrutor.nome])
-
-            excel_data.append([])  # Empty row as separator
-
-            # Add students section
-            excel_data.append(['Alunos Presentes'])
-            excel_data.append(['Nome', 'Faixa'])
-
-            for aluno in alunos:
-                excel_data.append([aluno.nome, aluno.graduacao.faixa])
-
-            # Create DataFrame
             df = pd.DataFrame(excel_data)
 
-            # Create a response with the Excel file
+            
             output = io.BytesIO()
 
-            # Create Excel writer
+            
             writer = pd.ExcelWriter(output, engine='xlsxwriter')
-            df.to_excel(writer, sheet_name='Relatório de Aula', header=False, index=False)
+            df.to_excel(writer, sheet_name='Relatório de Aula', index=False)
 
-            # Auto-adjust columns' width
+            
             worksheet = writer.sheets['Relatório de Aula']
             for i, col in enumerate(df.columns):
                 column_width = max(df[col].astype(str).map(len).max(), 10)
@@ -112,12 +100,12 @@ class AulaViewSet(viewsets.ModelViewSet):
 
             writer.close()
 
-            # Prepare response
+            
             output.seek(0)
 
-            # Format date for filename
+            
             filename_date = date_obj.strftime('%d-%m-%Y')
-            filename = f'relatoriodeaula-{filename_date}.xls'
+            filename = f'relatoriodeaula- {turma.nome} - {filename_date}.xls'
 
             response = HttpResponse(
                 output.read(),
@@ -128,6 +116,7 @@ class AulaViewSet(viewsets.ModelViewSet):
             return response
 
         except Exception as e:
+            print(f'Error: {e}')
             return Response(
                 {"error": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR

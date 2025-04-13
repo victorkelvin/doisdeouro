@@ -139,21 +139,27 @@ const apiBlobHandler = async (endpoint, body) => {
         await refreshAccessToken();
     }
 
-    const makeRequest = async () => {
-        const options = {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${ getToken()}`,
-              'Content-Type': 'application/json',
-            },
-            body: body ? JSON.stringify(body) : null,
+    try {
+        const makeRequest = async () => {
+            const options = {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${ getToken()}`,
+                  'Content-Type': 'application/json',
+                },
+                body: body ? JSON.stringify(body) : null,
+            };
+    
+            const response = await fetch(`${BASE_URL}${endpoint}`, options);
+            return response.blob(); // Return the blob directly
         };
+    
+        return makeRequest();
+        
+    } catch (error) {
+        console.error('Error fetching blob:', error);
+    }
 
-        const response = await fetch(`${BASE_URL}${endpoint}`, options);
-        return response.blob(); // Return the blob directly
-    };
-
-    return makeRequest();
 }
 
 export { apiRequest, apiFormDataRequest, logout, apiBlobHandler };

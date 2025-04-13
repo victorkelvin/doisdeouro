@@ -35,11 +35,6 @@ export const exportAulaToXLS = async (aulaData) => {
       const blob = await apiBlobHandler(url, aulaData);
       
       
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || 'Failed to export XLS');
-      }
-      
       // For binary files, use blob() instead of json()
       const date = new Date(aulaData.data);
       const formattedDate = `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getFullYear()}`;

@@ -58,7 +58,6 @@ const logout = () => {
 
 const handleResponse = async (response, retryCallback) => {
 
-    console.log(response.blob)
     if (!response.ok) {
         try {
             const errorData = await response.json();

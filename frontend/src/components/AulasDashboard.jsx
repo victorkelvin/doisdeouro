@@ -129,26 +129,26 @@ const AulasDashboard = () => {
 
 
     const handleExportarXLS = async () => {
-    
+
         try {
-          // Prepare the data for export
-          const aulaData = {
-            data,
-            horario_inicio,
-            horario_fim,
-            observacao,
-            turma: turma?.id,
-            turma_nome: turma?.nome,
-            instrutores: instrutores_aula.map(instrutor => instrutor.id),
-            alunos_presentes: alunos_presentes.map(aluno => aluno.id)
-          };
-          
-          await exportAulaToXLS(aulaData);
+            // Prepare the data for export
+            const aulaData = {
+                data,
+                horario_inicio,
+                horario_fim,
+                observacao,
+                turma: turma?.id,
+                turma_nome: turma?.nome,
+                instrutores: instrutores_aula.map(instrutor => instrutor.id),
+                alunos_presentes: alunos_presentes.map(aluno => aluno.id)
+            };
+
+            await exportAulaToXLS(aulaData);
         } catch (error) {
-          console.error('Error generating XLS report:', error);
-          alert('Erro ao gerar relatório XLS. Por favor, tente novamente.');
+            console.error('Error generating XLS report:', error);
+            alert('Erro ao gerar relatório XLS. Por favor, tente novamente.');
         }
-      };
+    };
 
     return (
         <div className="p-4 relative">
@@ -292,13 +292,18 @@ const AulasDashboard = () => {
                             >
                                 {editingId ? 'Atualizar' : 'Registrar'}
                             </button>
-                            <button
-                                onClick={handleExportarXLS}
 
-                                className="bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 px-4 rounded shadow-md transition-all duration-200"
-                            >
-                                Gerar Relatório .xls
-                            </button>
+                            {editingId && (
+                                <button
+                                    onClick={handleExportarXLS}
+                                    className="bg-teal-500 hover:bg-teal-600 text-white font-medium py-2 px-4 rounded shadow-md transition-all duration-200"
+                                >
+                                    Gerar Relatório .xls
+                                </button>
+
+                            )
+                            }
+
                             <button
                                 type="button"
                                 onClick={resetForm}
@@ -372,9 +377,16 @@ const AulasDashboard = () => {
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <button
                                             onClick={() => handleEdit(aula)}
-                                            className="bg-amber-500 hover:bg-amber-600 text-white rounded px-3 py-1 transition-colors duration-200"
+                                            className="bg-amber-500 hover:bg-amber-600 text-white rounded px-3 py-1 transition-colors duration-200 w-20 m-1"
                                         >
                                             Editar
+                                        </button>
+                                        <br></br>
+                                        <button
+                                            onClick={() =>  console.log(aula)}   
+                                            className="bg-teal-500 hover:bg-teal-600 text-white rounded px-3 py-1 transition-colors duration-200 w-20 m-1"
+                                        >
+                                            Bixar .xls
                                         </button>
                                     </td>
                                 </tr>

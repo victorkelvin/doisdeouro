@@ -18,3 +18,4 @@ setuptools==78.1.0
 six==1.17.0
 sqlparse==0.5.3
 tzdata==2025.2
+XlsxWriter==3.2.2

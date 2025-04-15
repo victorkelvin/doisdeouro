@@ -6,9 +6,9 @@ import { fetchAulas, createAula, updateAula, exportAulaToXLS } from '../services
 import { fetchTurmas } from '../services/turmasApi';
 import { fetchAlunos } from '../services/alunosApi';
 import { fetchInstrutores } from '../services/instrutoresApi';
-import SearchBar from './SearchBar';
-import MultiSelect from './MultiSelect';
-import AlunoCardModal from './AlunoCardModal';
+import SearchBar from '../components/SearchBar';
+import MultiSelect from '../components/MultiSelect';
+import AlunoCardModal from '../components/AlunoCardModal';
 
 const AulasDashboard = () => {
     const [aulas, setAulas] = useState([]);

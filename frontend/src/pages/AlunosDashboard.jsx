@@ -3,8 +3,8 @@ import { sortData, renderSortIndicator, filterData } from '../utils/sorting';
 import useAlunoForm from '../hooks/useAlunoForm';
 import { fetchAlunos, fetchGraduacoes, createAluno, updateAluno } from '../services/alunosApi';
 import { fetchTurmas } from '../services/turmasApi';
-import SearchBar from './SearchBar';
-import SpanCard from './SpanCard';
+import SearchBar from '../components/SearchBar';
+import SpanCard from '../components/SpanCard';
 
 
 const AlunosDashboard = () => {

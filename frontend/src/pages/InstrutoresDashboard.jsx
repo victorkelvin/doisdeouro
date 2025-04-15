@@ -3,8 +3,8 @@ import { fetchInstrutores, createInstrutor, updateInstrutor } from '../services/
 import { fetchGraduacoes } from '../services/alunosApi';
 import useInstrutorForm from '../hooks/useInstrutorForm';
 import { filterData, sortData, renderSortIndicator } from '../utils/sorting';
-import SearchBar from './SearchBar';
-import SpanCard from './SpanCard';
+import SearchBar from '../components/SearchBar';
+import SpanCard from '../components/SpanCard';
 
 const InstrutoresDashboard = () => {
     const [instrutores, setInstrutores] = useState([]);

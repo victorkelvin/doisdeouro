@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { formatDate } from '../utils/utils';
-import MultiSelect from './MultiSelect';
-import SearchBar from './SearchBar';
+import MultiSelect from '../components/MultiSelect';
+import SearchBar from '../components/SearchBar';
 import { fetchTurmas } from '../services/turmasApi';
 import { fetchAlunos } from '../services/alunosApi';
 import { fetchInstrutores } from '../services/instrutoresApi';

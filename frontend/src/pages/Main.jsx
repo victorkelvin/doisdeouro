@@ -4,11 +4,11 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import TopBar from '../components/TopBar';
 import Footer from '../components/Footer';
 
-import AlunosDashboard from '../components/AlunosDashboard';
-import TurmasDashboard from '../components/TurmasDashboard';
-import InstrutoresDashboard from '../components/InstrutoresDashboard';
-import AulasDashboard from '../components/AulasDashboard';
-import RelatoriosDashboard from '../components/RelatoriosDashboard';
+import AlunosDashboard from './AlunosDashboard';
+import TurmasDashboard from './TurmasDashboard';
+import InstrutoresDashboard from './InstrutoresDashboard';
+import AulasDashboard from './AulasDashboard';
+import RelatoriosDashboard from './RelatoriosDashboard';
 
 const Main = () => {
     const user_id = localStorage.getItem('user_id');

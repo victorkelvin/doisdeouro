@@ -7,6 +7,7 @@ djangorestframework-simplejwt==5.3.0
 et_xmlfile==2.0.0
 numpy==2.2.4
 openpyxl==3.1.5
+packaging==24.2
 pandas==2.2.3
 Pillow==10.1.0
 psycopg2-binary==2.9.9
@@ -18,4 +19,5 @@ setuptools==78.1.0
 six==1.17.0
 sqlparse==0.5.3
 tzdata==2025.2
+waitress==3.0.2
 XlsxWriter==3.2.2

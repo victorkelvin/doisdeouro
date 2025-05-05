@@ -6,7 +6,7 @@ class AlunoSerializer(serializers.ModelSerializer):
     turma_nome = serializers.StringRelatedField(source='turma.nome', read_only=True)
     class Meta:
         model = Aluno
-        fields = ['id', 'nome', 'data_nascimento', 'contato', 'foto', 'graduacao', 'faixa', 'turma', 'turma_nome']
+        fields = ['id', 'nome', 'data_nascimento', 'contato', 'foto', 'graduacao', 'faixa', 'turma', 'turma_nome', 'ativo']
 
 
 class TurmaSerializer(serializers.ModelSerializer):

@@ -15,7 +15,7 @@ media/
 backend/apps/academia/migrations/
 backend/apps/atendimento/migrations/
 backend/apps/contas/migrations/
-
+backend/staticfiles/
 # Node
 node_modules/
 build/

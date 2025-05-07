@@ -1,5 +1,5 @@
 import React from "react";
-import { LogOut, Users, BookOpen, UserCog, ClipboardList, BookOpenIcon } from "lucide-react";
+import { LogOut, Users, BookOpen, UserCog, ClipboardList } from "lucide-react";
 import LogoAcademia from "./LogoAcademia";
 import { useAuth } from "../contexts/AuthContext";
 import { NavLink, useNavigate } from "react-router-dom";

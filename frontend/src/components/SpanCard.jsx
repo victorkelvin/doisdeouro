@@ -3,7 +3,6 @@ import { formatDate } from '../utils/utils';
 
 const SpanCard = ({ data, position, setCardPosition }) => {
     const [cardPosition, setCardPositionState] = useState(position);
-
     useEffect(() => {
         const handleMouseMove = (e) => {
             const viewportWidth = window.innerWidth;
@@ -44,12 +43,29 @@ const SpanCard = ({ data, position, setCardPosition }) => {
                 top: `${cardPosition.y}px`
             }}
         >
+
             <div className="flex flex-col items-center">
-                <img
-                    src={data.foto}
-                    alt={data.nome}
-                    className="w-32 h-32 object-cover rounded-lg mb-2 border border-gray-200"
-                />
+                {data.foto_base64 ? (
+                    <img
+                        src={data.foto_base64}
+                        alt={data.nome}
+                        className="w-32 h-32 object-cover rounded-lg mb-2 border border-gray-200"
+                    />
+                ) : (
+                    <svg
+                        width="100"
+                        height="100"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                    >
+                        <circle cx="12" cy="8" r="5" />
+                        <path d="M20 21v-2a7 7 0 0 0-14 0v2" />
+                    </svg>
+                )}
+
+
                 <h2 className='font-bold text-lg text-gray-900'>{data.nome}</h2>
                 <div className="w-full mt-2">
                     <p className="text-sm"><span className="font-semibold">Graduação:</span> {data.faixa || 'N/A'}</p>

@@ -14,7 +14,7 @@ import io
 from datetime import datetime
 
 class CustomPagination(PageNumberPagination):
-    page_size = 20
+    page_size = 50
 
 
 class AulaViewSet(viewsets.ModelViewSet):

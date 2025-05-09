@@ -1,0 +1,12 @@
+{
+    "build": {
+      "command": "npm run build",
+      "output": "build"
+    },
+    "deploy": {
+      "startCommand": "npx serve -s build",
+      "healthcheckPath": "/",
+      "healthcheckTimeout": 100,
+      "restartPolicyType": "on_failure"
+    }
+  }

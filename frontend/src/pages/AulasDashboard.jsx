@@ -49,7 +49,9 @@ const AulasDashboard = () => {
         setAlunos(alunosData.results);
 
         setTurmas(await fetchTurmas());
-        setInstrutores(await fetchInstrutores());
+        const instrutoresData = await fetchInstrutores();
+        const filteredInstrutores = instrutoresData.filter(instrutor => !instrutor.is_superuser);
+        setInstrutores(filteredInstrutores);
     };
 
     useEffect(() => {
@@ -85,6 +87,7 @@ const AulasDashboard = () => {
     };
 
     const handleEdit = (aula) => {
+        setIsFormVisible(true);
         setData((aula.data));
         setAlunosPresentes(aula.alunos_presentes || []);
         setHorarioInicio(aula.horario_inicio);
@@ -133,10 +136,10 @@ const AulasDashboard = () => {
         console.log(aula)
         try {
             const aulaData = {
-                data : aula.data,
-                horario_inicio : aula.horario_inicio,
-                horario_fim : aula.horario_fim,
-                observacao : aula.observacao,
+                data: aula.data,
+                horario_inicio: aula.horario_inicio,
+                horario_fim: aula.horario_fim,
+                observacao: aula.observacao,
                 turma: aula.turma.id,
                 turma_nome: aula.turma.nome,
                 instrutores: aula.instrutores.map(instrutor => instrutor.id),
@@ -373,7 +376,7 @@ const AulasDashboard = () => {
                                         </button>
                                         <br></br>
                                         <button
-                                            onClick={() =>  handleExportarXLS(aula)}   
+                                            onClick={() => handleExportarXLS(aula)}
                                             className="bg-teal-500 hover:bg-teal-600 text-white rounded px-3 py-1 transition-colors duration-200 w-20 m-1"
                                         >
                                             Baixar .xls

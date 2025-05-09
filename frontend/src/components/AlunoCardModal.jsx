@@ -68,9 +68,9 @@ const AlunoCardModal = ({
                                 <div className="relative">
                                     {/* Placeholder for photo */}
                                     <div className="bg-gray-200 h-40 flex items-center justify-center">
-                                        {aluno.foto ? (
+                                        {aluno.foto_base64 ? (
                                             <img 
-                                                src={aluno.foto} 
+                                                src={aluno.foto_base64} 
                                                 alt={aluno.nome} 
                                                 className="w-full h-full object-cover"
                                             />

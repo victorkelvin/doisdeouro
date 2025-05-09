@@ -46,7 +46,8 @@ const InstrutoresDashboard = () => {
 
     const loadData = async () => {
         const instrutoresData = await fetchInstrutores();
-        setInstrutores(instrutoresData);
+        const filteredInstrutores = instrutoresData.filter(instrutor => !instrutor.is_superuser);
+        setInstrutores(filteredInstrutores);
         const graduacoesData = await fetchGraduacoes();
         setGraduacoes(graduacoesData);
     };
@@ -116,21 +117,21 @@ const InstrutoresDashboard = () => {
             }
 
             resetForm();
-            const instrutoresData = await fetchInstrutores();
-            setInstrutores(instrutoresData);
+            loadData();
         } catch (error) {
             console.error('Error submitting form:', error);
         }
     };
 
     const handleEdit = (instrutor) => {
+        setIsFormVisible(true);
         setUsername(instrutor.username);
         setIsActive(instrutor.is_active === true || instrutor.is_active === "true");
         setNome(instrutor.nome);
         setContato(instrutor.contato || '');
         setEmail(instrutor.email || '');
         setGraduacao(instrutor.graduacao || '');
-        setFotoPreview(instrutor.foto);
+        setFotoPreview(instrutor.foto_base64 || '');
         setEditingId(instrutor.id);
         setPassword(instrutor.password || '');
     };
@@ -146,7 +147,7 @@ const InstrutoresDashboard = () => {
         formData.append('is_active', newStatus);
 
         await updateInstrutor(instrutor.id, formData);
-        setInstrutores(await fetchInstrutores());
+        loadData();
     };
 
     const filteredInstrutores = filterData(instrutores, searchTerm);

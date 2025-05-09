@@ -1,4 +1,23 @@
-const BASE_URL = 'http://localhost:8000/api/';
+// Configuração para usar a URL pública no navegador do cliente
+// e a URL interna para comunicação entre serviços no Railway
+let BASE_URL;
+
+// Verifica se estamos rodando no ambiente do cliente (navegador) ou servidor
+if (typeof window !== 'undefined') {
+    BASE_URL = process.env.REACT_APP_API_URL || 'localhost:8000';
+} else {
+    // No servidor ou em ambiente de build, podemos usar a URL interna
+    BASE_URL = process.env.REACT_APP_BACKEND_URL || 'localhost:8000';
+}
+
+let API_URL;
+
+if (process.env.NODE_ENV === 'production') {
+    API_URL = `https://${BASE_URL}/api/`;
+} else {
+    // Em desenvolvimento, usamos a URL interna
+    API_URL = `http://${BASE_URL}/api/`;
+}
 
 const getToken = () => {
     return localStorage.getItem('token');
@@ -24,7 +43,7 @@ const refreshAccessToken = async () => {
             throw new Error('No refresh token available');
         }
 
-        const response = await fetch(`${BASE_URL}token/refresh/`, {
+        const response = await fetch(`${API_URL}token/refresh/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -102,11 +121,11 @@ const apiRequest = async (endpoint, method, body = null) => {
             body: body ? JSON.stringify(body) : null,
         };
 
-        const response = await fetch(`${BASE_URL}${endpoint}`, options);
+        const response = await fetch(`${API_URL}${endpoint}`, options);
         return handleResponse(response, newToken => makeRequest(newToken));
     };
 
-    return makeRequest( null );
+    return makeRequest(null);
 };
 
 
@@ -125,7 +144,7 @@ const apiFormDataRequest = async (endpoint, method, formData) => {
             body: formData,
         };
 
-        const response = await fetch(`${BASE_URL}${endpoint}`, options);
+        const response = await fetch(`${API_URL}${endpoint}`, options);
         return handleResponse(response, newToken => makeRequest(newToken));
     };
 
@@ -143,22 +162,22 @@ const apiBlobHandler = async (endpoint, body) => {
             const options = {
                 method: 'POST',
                 headers: {
-                  'Authorization': `Bearer ${ getToken()}`,
-                  'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getToken()}`,
+                    'Content-Type': 'application/json',
                 },
                 body: body ? JSON.stringify(body) : null,
             };
-    
-            const response = await fetch(`${BASE_URL}${endpoint}`, options);
+
+            const response = await fetch(`${API_URL}${endpoint}`, options);
             return response.blob(); // Return the blob directly
         };
-    
+
         return makeRequest();
-        
+
     } catch (error) {
         console.error('Error fetching blob:', error);
     }
 
 }
 
-export { apiRequest, apiFormDataRequest, logout, apiBlobHandler };
+export { apiRequest, apiFormDataRequest, logout, apiBlobHandler, API_URL };

@@ -7,7 +7,8 @@ from dotenv import load_dotenv
 
 def main():
     """Run administrative tasks."""
-    load_dotenv()
+    if not os.environ.get('RAILWAY_RAILWAY_PROJECT_NAME'):
+        load_dotenv()
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
     try:
         from django.core.management import execute_from_command_line

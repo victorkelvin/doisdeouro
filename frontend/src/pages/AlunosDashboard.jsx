@@ -44,7 +44,7 @@ const AlunosDashboard = () => {
 
     const loadData = async () => {
         const alunosData = await fetchAlunos();
-        setAlunos(alunosData.results);
+        setAlunos(await alunosData.results);
         const graduacoesData = await fetchGraduacoes();
         setGraduacoes(graduacoesData);
         const turmasData = await fetchTurmas();
@@ -116,14 +116,14 @@ const AlunosDashboard = () => {
             }
 
             resetForm();
-            const alunosData = await fetchAlunos();
-            setAlunos(alunosData.results);
+            loadData(); // Reload data after submission
         } catch (error) {
             console.error('Error submitting form:', error);
         }
     };
 
     const handleEdit = (aluno) => {
+        setIsFormVisible(true);
         setNome(aluno.nome);
         setAtivo(aluno.ativo === true || aluno.ativo === "true"); 
         setDataNascimento(aluno.data_nascimento);
@@ -132,7 +132,7 @@ const AlunosDashboard = () => {
         setGraduacao(aluno.graduacao || '');
         setTurma(aluno.turma || '');
         setEditingId(aluno.id);
-        setFotoPreview(aluno.foto);
+        setFotoPreview(aluno.foto_base64 || '');
     };
 
     const toggleAtivoStatus = async (aluno) => {
@@ -147,8 +147,7 @@ const AlunosDashboard = () => {
         formData.append('ativo', newStatus);
 
         await updateAluno(aluno.id, formData);
-        const alunosData = await fetchAlunos();
-        setAlunos(alunosData.results);
+        loadData(); // Reload data after updating status
     };
 
     const filteredAlunos = filterData(alunos, searchTerm);
@@ -191,6 +190,7 @@ const AlunosDashboard = () => {
                             required
                             className="border rounded p-2 mb-3 w-full focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-transparent"
                         />
+                        <label className="block text-gray-700 text-sm font-bold mb-2">Data de Nascimento</label>
                         <input
                             type="date"
                             value={data_nascimento}
